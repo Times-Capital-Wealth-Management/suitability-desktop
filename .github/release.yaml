@@ -1,0 +1,54 @@
+name: Release App
+
+on:
+  push:
+    tags:
+      - 'v*' # Triggers when you push a tag like v0.1.0
+  workflow_dispatch: # Allows manual triggering from GitHub UI
+
+jobs:
+  release:
+    permissions:
+      contents: write # Needed to upload the .exe/.dmg to the release
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          # On Mac, we want to support both Apple Silicon (native) and Intel (target)
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Install frontend dependencies
+        run: pnpm install
+
+      - name: Build and Upload
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # No Apple Certificates provided = Ad-Hoc Signing (Free, but shows warnings)
+        with:
+          tagName: v__VERSION__ # Will automatically match your package.json version
+          releaseName: 'Suitability App v__VERSION__'
+          releaseBody: 'See the assets below to download and install.'
+          releaseDraft: true
+          prerelease: false
