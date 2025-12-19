@@ -5,8 +5,8 @@ import { isTauri } from "./tauri";
  * Save a PDF blob to a file using native file dialog
  */
 export async function savePdfToFile(
-  pdfBlob: Blob,
-  defaultFileName: string = "document.pdf"
+    pdfBlob: Blob,
+    defaultFileName: string = "document.pdf"
 ): Promise<string | null> {
   if (!isTauri()) {
     // Browser fallback: trigger download
@@ -55,6 +55,41 @@ export async function savePdfToFile(
 }
 
 /**
+ * Select a text file (like CSV) and return its path
+ */
+export async function selectTextFile(): Promise<string | null> {
+  if (!isTauri()) return null;
+
+  try {
+    const { open } = await import("@tauri-apps/plugin-dialog");
+    const selected = await open({
+      multiple: false,
+      filters: [{ name: "CSV Files", extensions: ["csv"] }],
+    });
+
+    return selected as string | null;
+  } catch (error) {
+    console.error("Failed to select file:", error);
+    return null;
+  }
+}
+
+/**
+ * Read text content from a file path
+ */
+export async function readTextFile(path: string): Promise<string> {
+  if (!isTauri()) return "";
+
+  try {
+    const { readTextFile } = await import("@tauri-apps/plugin-fs");
+    return await readTextFile(path);
+  } catch (error) {
+    console.error("Failed to read file:", error);
+    throw error;
+  }
+}
+
+/**
  * Open a folder selection dialog
  */
 export async function selectFolder(): Promise<string | null> {
@@ -79,8 +114,8 @@ export async function selectFolder(): Promise<string | null> {
  * Show a confirmation dialog
  */
 export async function confirmDialog(
-  title: string,
-  message: string
+    title: string,
+    message: string
 ): Promise<boolean> {
   if (!isTauri()) {
     return window.confirm(message);
@@ -99,9 +134,9 @@ export async function confirmDialog(
  * Show a message dialog
  */
 export async function messageDialog(
-  title: string,
-  message: string,
-  kind: "info" | "warning" | "error" = "info"
+    title: string,
+    message: string,
+    kind: "info" | "warning" | "error" = "info"
 ): Promise<void> {
   if (!isTauri()) {
     alert(message);
@@ -118,6 +153,8 @@ export async function messageDialog(
 
 export default {
   savePdfToFile,
+  selectTextFile,
+  readTextFile,
   selectFolder,
   confirmDialog,
   messageDialog,

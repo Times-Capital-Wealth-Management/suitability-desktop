@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,16 +23,19 @@ import {
     PaginationNext,
     PaginationEllipsis,
 } from "@/components/ui/pagination";
-import {Plus, Trash2} from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import LetterPreviewSheet from "./LetterPreviewSheet";
 import dynamic from "next/dynamic";
 import UpsideDownsideCalculator from "@/components/calculator";
 import Database from "@tauri-apps/plugin-sql";
 import { isTauri } from "@/lib/tauri";
+import { ClientSelector } from "@/components/client-selector";
 import { MOCK_CLIENTS } from "@/app/clients/data";
+import { cn } from "@/lib/utils"; // Imported for conditional styling
 
 /* -------------------- Types -------------------- */
 
+// We define a local client type that matches the form's specific union types
 type Client = {
     id: string;
     firstName: string;
@@ -54,7 +57,7 @@ type ClientList = { items: Client[]; total: number };
 type Trade = {
     assetName: string;
     accountType: "ISA" | "GIA";
-    assetType: "Equity" | "CFD/SB"
+    assetType: "Equity" | "CFD/SB";
     assetRisk: "Low" | "Medium" | "High";
     side: "Buy" | "Sell" | "Invest";
     quantity: string;
@@ -150,7 +153,7 @@ function validateTrade(trade: Trade): TradeErrors {
 
     if (!trade.quantity.trim()) {
         errors.quantity = "Quantity/Amount is required";
-    } else if (!/^[\d,]+(\.\d+)?$/.test(trade.quantity.trim().replace(/[£$€]/g, ''))) {
+    } else if (!/^[\d,]+(\.\d+)?$/.test(trade.quantity.trim().replace(/[£$€]/g, ""))) {
         errors.quantity = "Must be a valid number";
     }
 
@@ -182,7 +185,7 @@ function validateTrade(trade: Trade): TradeErrors {
         errors.timeOfTrade = "Format: HH:MM";
     }
 
-    const hasAtLeastOneReason = trade.reasons.some(r => r.trim().length > 0);
+    const hasAtLeastOneReason = trade.reasons.some((r) => r.trim().length > 0);
     if (!hasAtLeastOneReason) {
         errors.reasons = "At least one reason is required";
     }
@@ -198,8 +201,8 @@ function validateForm(form: SuitabilityFormState): FormErrors {
 }
 
 function hasErrors(errors: FormErrors): boolean {
-    const clientHasErrors = Object.values(errors.client).some(e => e !== null);
-    const tradesHaveErrors = errors.trades.some(t => Object.values(t).some(e => e !== null));
+    const clientHasErrors = Object.values(errors.client).some((e) => e !== null);
+    const tradesHaveErrors = errors.trades.some((t) => Object.values(t).some((e) => e !== null));
     return clientHasErrors || tradesHaveErrors;
 }
 
@@ -218,7 +221,7 @@ async function fetchAllClients(): Promise<Client[]> {
         try {
             const db = await Database.load("sqlite:timescapital.db");
             const rows = await db.select<Client[]>(`
-                SELECT 
+                SELECT
                     id,
                     first_name as firstName,
                     last_name as lastName,
@@ -246,7 +249,7 @@ async function fetchAllClients(): Promise<Client[]> {
     try {
         const res = await fetch("/api/clients", { cache: "no-store" });
         if (res.ok) {
-            const data = await res.json() as ClientList;
+            const data = (await res.json()) as ClientList;
             return data.items as Client[];
         }
     } catch {
@@ -261,24 +264,27 @@ async function fetchClientById(id: string): Promise<Client | null> {
     if (isTauri()) {
         try {
             const db = await Database.load("sqlite:timescapital.db");
-            const rows = await db.select<Client[]>(`
-                SELECT 
-                    id,
-                    first_name as firstName,
-                    last_name as lastName,
-                    investment_manager as investmentManager,
-                    knowledge_experience as knowledgeExperience,
-                    loss_pct as lossPct,
-                    account_number as accountNumber,
-                    salutation,
-                    objective,
-                    risk,
-                    email,
-                    phone,
-                    address
-                FROM clients
-                WHERE id = $1
-            `, [id]);
+            const rows = await db.select<Client[]>(
+                `
+                    SELECT
+                        id,
+                        first_name as firstName,
+                        last_name as lastName,
+                        investment_manager as investmentManager,
+                        knowledge_experience as knowledgeExperience,
+                        loss_pct as lossPct,
+                        account_number as accountNumber,
+                        salutation,
+                        objective,
+                        risk,
+                        email,
+                        phone,
+                        address
+                    FROM clients
+                    WHERE id = $1
+                `,
+                [id]
+            );
             return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             console.error("SQLite error:", error);
@@ -289,7 +295,7 @@ async function fetchClientById(id: string): Promise<Client | null> {
     try {
         const res = await fetch(`/api/clients/${id}`, { cache: "no-store" });
         if (res.ok) {
-            return await res.json() as Client;
+            return (await res.json()) as Client;
         }
     } catch {
         // API not available
@@ -297,7 +303,7 @@ async function fetchClientById(id: string): Promise<Client | null> {
 
     // Fallback to mock data
     const client = MOCK_CLIENTS.items.find((c) => c.id === id);
-    return client as Client || null;
+    return (client as Client) || null;
 }
 
 /* -------------------- Component -------------------- */
@@ -336,42 +342,7 @@ export function SuitabilityWorkspace() {
         ],
     });
 
-    //for the client searchbar
-    const [search, setSearch] = useState("");
-    const [open, setOpen] = useState(false); //for opening and closing the client search dropdown
-    const [searchIndex, setSearchIndex] = useState(0);
-
-    const filteredClients = clients.filter((c) =>
-        `${c.firstName} ${c.lastName}`.toLowerCase().includes(search.toLowerCase()) //will filter out whatever doesn't include
-    );
-    const handleArrowKeys = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (!open) return
-
-        if (e.key === "ArrowDown") {
-            e.preventDefault()
-            setSearchIndex((prev) =>
-                prev + 1 < filteredClients.length ? prev + 1 : 0
-            )
-        } else if (e.key === "ArrowUp") {
-            e.preventDefault()
-            setSearchIndex((prev) =>
-                prev - 1 >= 0 ? prev - 1 : filteredClients.length - 1
-            )
-        } else if (e.key === "Enter") {
-            e.preventDefault()
-            const selected = filteredClients[searchIndex]
-            if (selected) {
-                setForm((s) => ({ ...s, clientId: selected.id }))
-                setSearch(`${selected.firstName} ${selected.lastName}`)
-                setOpen(false) //closes the dropdown
-            }
-        }
-    };
-
-    const SuitabilityLetterPDF = dynamic(
-        () => import("@/components/suitability/SuitabilityLetterPDF"),
-        { ssr: false }
-    );
+    const SuitabilityLetterPDF = dynamic(() => import("@/components/suitability/SuitabilityLetterPDF"), { ssr: false });
 
     /* --------- pagination (locked to 1 per page) --------- */
     const pageSize = 1 as const;
@@ -447,32 +418,32 @@ export function SuitabilityWorkspace() {
             reasons: ["", "", ""],
         };
 
-        setForm(prev => {
+        setForm((prev) => {
             const nextTrades = [...prev.trades, newTrade];
             // update page AFTER state is queued, using nextTrades length
             queueMicrotask(() => setPage(Math.ceil(nextTrades.length / pageSize)));
-            return {...prev, trades: nextTrades};
+            return { ...prev, trades: nextTrades };
         });
 
         // Add corresponding empty errors entry
-        setErrors(prev => ({
+        setErrors((prev) => ({
             ...prev,
             trades: [...prev.trades, { ...emptyTradeErrors }],
         }));
     };
 
     const removeTrade = (absIndex: number) => {
-        setForm(prev => {
+        setForm((prev) => {
             const nextTrades = prev.trades.filter((_, i) => i !== absIndex);
             queueMicrotask(() => {
                 const nextTotalPages = Math.max(1, Math.ceil(nextTrades.length / pageSize));
-                setPage(p => Math.min(p, nextTotalPages));
+                setPage((p) => Math.min(p, nextTotalPages));
             });
-            return {...prev, trades: nextTrades};
+            return { ...prev, trades: nextTrades };
         });
 
         // Remove corresponding errors entry
-        setErrors(prev => ({
+        setErrors((prev) => ({
             ...prev,
             trades: prev.trades.filter((_, i) => i !== absIndex),
         }));
@@ -486,9 +457,7 @@ export function SuitabilityWorkspace() {
 
         if (hasErrors(newErrors)) {
             // Find first trade with errors and navigate to it
-            const firstTradeWithError = newErrors.trades.findIndex(t =>
-                Object.values(t).some(e => e !== null)
-            );
+            const firstTradeWithError = newErrors.trades.findIndex((t) => Object.values(t).some((e) => e !== null));
             if (firstTradeWithError >= 0) {
                 setPage(firstTradeWithError + 1);
             }
@@ -499,13 +468,12 @@ export function SuitabilityWorkspace() {
     };
 
     const updateTrade = (absIndex: number, updater: (t: Trade) => Trade) => {
-        setForm(prev => {
+        setForm((prev) => {
             const next = [...prev.trades];
             next[absIndex] = updater(next[absIndex]);
-            return {...prev, trades: next};
+            return { ...prev, trades: next };
         });
     };
-
 
     /* ---------------- render ---------------- */
     return (
@@ -514,56 +482,28 @@ export function SuitabilityWorkspace() {
             <CardClient className="rounded-2xl border p-6 space-y-4">
                 <h3 className="text-base font-medium">Client</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                    {/* New Client Selector */}
                     <div className="space-y-1.5 relative">
                         <Label>Client</Label>
-
-                        <Input
-                               className={`bg-input ${showErrors && errors.client.client ? "border-red-500" : ""}`}
-                               type="text"
-                               value={search}
-                               onChange={(e) => {
-                                   setSearch(e.target.value)
-                                   setOpen(true)
-                                   setSearchIndex(0)
-                               }}
-                               onKeyDown={handleArrowKeys}
-                               placeholder={loadingClients ? "Loading…" : "Search client"}
+                        <ClientSelector
+                            clients={clients}
+                            selectedClientId={form.clientId}
+                            loading={loadingClients}
+                            onSelect={(client) => {
+                                setForm((s) => ({ ...s, clientId: client.id }));
+                            }}
                         />
                         {showErrors && <FieldError error={errors.client.client} />}
-
-                        {open && search && (
-                            <ul className="absolute z-10 mt-1 w-full border rounded bg-white shadow max-h-40 overflow-y-auto">
-                                {filteredClients.length > 0 ? (
-                                    filteredClients.map((c, idx) => (
-                                        <li
-                                            key={c.id}
-                                            className={`cursor-pointer py-1 px-2 ${
-                                                idx === searchIndex ? "bg-accent text-accent-foreground" : "hover:bg-accent"
-                                            }`}
-                                            onClick={() => {
-                                                setForm((s) => ({ ...s, clientId: c.id }))
-                                                setSearch(`${c.firstName} ${c.lastName}`)
-                                                setOpen(false)
-                                            }}
-                                        >
-                                            {c.firstName} {c.lastName}
-                                        </li>
-                                    ))
-                                ) : (
-                                    <li className="py-1 px-2 text-muted-foreground">No client found</li>
-                                )}
-                            </ul>
-                        )}
                     </div>
-
 
                     <div className="space-y-1.5">
                         <Label>Investment Manager</Label>
                         <Input
-                               className={`bg-input ${showErrors && errors.client.investmentManager ? "border-red-500" : ""}`}
-                               value={form.investmentManager}
-                               onChange={(e) => setForm((s) => ({...s, investmentManager: e.target.value}))}
-                               placeholder="e.g. Amelia Shaw"
+                            className={`bg-input ${showErrors && errors.client.investmentManager ? "border-red-500" : ""}`}
+                            value={form.investmentManager}
+                            onChange={(e) => setForm((s) => ({ ...s, investmentManager: e.target.value }))}
+                            placeholder="e.g. Amelia Shaw"
                         />
                         {showErrors && <FieldError error={errors.client.investmentManager} />}
                     </div>
@@ -572,10 +512,10 @@ export function SuitabilityWorkspace() {
                         <Label>Knowledge / Experience</Label>
                         <Select
                             value={form.knowledgeExperience}
-                            onValueChange={(v: any) => setForm((s) => ({...s, knowledgeExperience: v}))}
+                            onValueChange={(v: any) => setForm((s) => ({ ...s, knowledgeExperience: v }))}
                         >
-                            <SelectTrigger>
-                                <SelectValue/>
+                            <SelectTrigger className="bg-input">
+                                <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="Low">Low</SelectItem>
@@ -588,10 +528,10 @@ export function SuitabilityWorkspace() {
                     <div className="space-y-1.5">
                         <Label>Capacity of Loss</Label>
                         <Input
-                               className={`bg-input ${showErrors && errors.client.capacityOfLoss ? "border-red-500" : ""}`}
-                               value={form.capacityOfLoss}
-                               onChange={(e) => setForm((s) => ({...s, capacityOfLoss: e.target.value}))}
-                               placeholder="e.g. 10%"
+                            className={`bg-input ${showErrors && errors.client.capacityOfLoss ? "border-red-500" : ""}`}
+                            value={form.capacityOfLoss}
+                            onChange={(e) => setForm((s) => ({ ...s, capacityOfLoss: e.target.value }))}
+                            placeholder="e.g. 10%"
                         />
                         {showErrors && <FieldError error={errors.client.capacityOfLoss} />}
                     </div>
@@ -599,29 +539,29 @@ export function SuitabilityWorkspace() {
                     <div className="space-y-1.5">
                         <Label>Account Number</Label>
                         <Input
-                               className={`bg-input ${showErrors && errors.client.accountNumber ? "border-red-500" : ""}`}
-                               value={form.accountNumber}
-                               onChange={(e) => setForm((s) => ({...s, accountNumber: e.target.value}))}
-                               placeholder="AC-123456"
+                            className={`bg-input ${showErrors && errors.client.accountNumber ? "border-red-500" : ""}`}
+                            value={form.accountNumber}
+                            onChange={(e) => setForm((s) => ({ ...s, accountNumber: e.target.value }))}
+                            placeholder="AC-123456"
                         />
                         {showErrors && <FieldError error={errors.client.accountNumber} />}
                     </div>
 
                     <div className="space-y-1.5">
                         <Label>Salutation</Label>
-                        <Input className= "bg-input"
-                               value={form.salutation}
-                               onChange={(e) => setForm((s) => ({...s, salutation: e.target.value}))}
-                               placeholder="Mr / Ms / Dr"
+                        <Input
+                            className="bg-input"
+                            value={form.salutation}
+                            onChange={(e) => setForm((s) => ({ ...s, salutation: e.target.value }))}
+                            placeholder="Mr / Ms / Dr"
                         />
                     </div>
 
                     <div className="space-y-1.5">
                         <Label>Objective</Label>
-                        <Select value={form.objective}
-                                onValueChange={(v: any) => setForm((s) => ({...s, objective: v}))}>
-                            <SelectTrigger>
-                                <SelectValue/>
+                        <Select value={form.objective} onValueChange={(v: any) => setForm((s) => ({ ...s, objective: v }))}>
+                            <SelectTrigger className="bg-input">
+                                <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="Balance">Balance</SelectItem>
@@ -633,9 +573,16 @@ export function SuitabilityWorkspace() {
 
                     <div className="space-y-1.5">
                         <Label>Risk</Label>
-                        <Select value={form.risk} onValueChange={(v: any) => setForm((s) => ({...s, risk: v}))}>
-                            <SelectTrigger>
-                                <SelectValue/>
+                        <Select value={form.risk} onValueChange={(v: any) => setForm((s) => ({ ...s, risk: v }))}>
+                            <SelectTrigger
+                                className={cn(
+                                    "bg-input",
+                                    form.risk === "Low" && "bg-emerald-100 text-emerald-900 border-emerald-200 focus:ring-emerald-200",
+                                    form.risk === "Medium" && "bg-amber-100 text-amber-900 border-amber-200 focus:ring-amber-200",
+                                    form.risk === "High" && "bg-rose-100 text-rose-900 border-rose-200 focus:ring-rose-200"
+                                )}
+                            >
+                                <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="Low">Low</SelectItem>
@@ -652,7 +599,7 @@ export function SuitabilityWorkspace() {
                 <div className="flex items-center justify-between">
                     <h3 className="text-base font-medium">Proposed Transactions</h3>
                     <Button variant="outline" size="sm" onClick={addTrade}>
-                        <Plus className="mr-2 h-4 w-4"/>
+                        <Plus className="mr-2 h-4 w-4" />
                         Add trade
                     </Button>
                 </div>
@@ -661,7 +608,10 @@ export function SuitabilityWorkspace() {
                     {pagedTrades.map((t, i) => {
                         const abs = startIdx + i;
                         return (
-                            <div key={abs} className="rounded-xl border p-4 space-y-4 bg-cardClient text-cardClient-foreground">
+                            <div
+                                key={abs}
+                                className="rounded-xl border p-4 space-y-4 bg-cardClient text-cardClient-foreground"
+                            >
                                 <div className="flex items-center justify-between">
                                     <div className="text-sm font-medium">Trade {abs + 1}</div>
                                     {form.trades.length > 1 && (
@@ -671,7 +621,7 @@ export function SuitabilityWorkspace() {
                                             onClick={() => removeTrade(abs)}
                                             aria-label={`Remove trade ${abs + 1}`}
                                         >
-                                            <Trash2 className="h-4 w-4"/>
+                                            <Trash2 className="h-4 w-4" />
                                         </Button>
                                     )}
                                 </div>
@@ -681,33 +631,41 @@ export function SuitabilityWorkspace() {
                                     <div className="space-y-1.5">
                                         <Label>Asset Name</Label>
                                         <Input
-                                               className={`bg-input ${showErrors && errors.trades[abs]?.assetName ? "border-red-500" : ""}`}
-                                               value={t.assetName}
-                                               onChange={(e) => updateTrade(abs, (old) => ({
-                                                   ...old,
-                                                   assetName: e.target.value
-                                               }))}
-                                               placeholder="e.g. Apple Inc."
+                                            className={`bg-input ${showErrors && errors.trades[abs]?.assetName ? "border-red-500" : ""}`}
+                                            value={t.assetName}
+                                            onChange={(e) =>
+                                                updateTrade(abs, (old) => ({
+                                                    ...old,
+                                                    assetName: e.target.value,
+                                                }))
+                                            }
+                                            placeholder="e.g. Apple Inc."
                                         />
                                         {showErrors && <FieldError error={errors.trades[abs]?.assetName} />}
                                     </div>
 
-                                    {/* Radio buttons for the account type added*/}
+                                    {/* Radio buttons for the account type */}
                                     <div className="space-y-1.5">
                                         <Label>Account Type</Label>
                                         <RadioGroup
                                             value={t.accountType}
-                                            onValueChange={(v: any) => updateTrade(abs, (old) => ({
-                                                ...old,
-                                                accountType: v
-                                            }))}
+                                            onValueChange={(v: any) =>
+                                                updateTrade(abs, (old) => ({
+                                                    ...old,
+                                                    accountType: v,
+                                                }))
+                                            }
                                         >
                                             <div className="flex items-center space-x-1.5">
-                                                <RadioGroupItem className="bg-input" value="ISA">ISA</RadioGroupItem>
+                                                <RadioGroupItem className="bg-input" value="ISA">
+                                                    ISA
+                                                </RadioGroupItem>
                                                 <Label>ISA</Label>
                                             </div>
                                             <div className="flex items-center space-x-1.5">
-                                                <RadioGroupItem className="bg-input" value="GIA">GIA</RadioGroupItem>
+                                                <RadioGroupItem className="bg-input" value="GIA">
+                                                    GIA
+                                                </RadioGroupItem>
                                                 <Label>GIA</Label>
                                             </div>
                                         </RadioGroup>
@@ -717,18 +675,24 @@ export function SuitabilityWorkspace() {
                                         <Label>Asset Type</Label>
                                         <RadioGroup
                                             value={t.assetType}
-                                            onValueChange={(v: any) => updateTrade(abs, (old) => ({
-                                                ...old,
-                                                assetType: v
-                                            }))}
+                                            onValueChange={(v: any) =>
+                                                updateTrade(abs, (old) => ({
+                                                    ...old,
+                                                    assetType: v,
+                                                }))
+                                            }
                                         >
                                             <div className="flex items-center space-x-1.5">
-                                                <RadioGroupItem className="bg-input" value="Equity">Equity</RadioGroupItem>
+                                                <RadioGroupItem className="bg-input" value="Equity">
+                                                    Equity
+                                                </RadioGroupItem>
                                                 <Label>Equity</Label>
                                             </div>
 
                                             <div className="flex items-center space-x-1.5">
-                                                <RadioGroupItem  className="bg-input" value="CFD/SB">CFD/SB</RadioGroupItem>
+                                                <RadioGroupItem className="bg-input" value="CFD/SB">
+                                                    CFD/SB
+                                                </RadioGroupItem>
                                                 <Label>CFD/SB</Label>
                                             </div>
                                         </RadioGroup>
@@ -738,13 +702,22 @@ export function SuitabilityWorkspace() {
                                         <Label>Asset Risk</Label>
                                         <Select
                                             value={t.assetRisk}
-                                            onValueChange={(v: any) => updateTrade(abs, (old) => ({
-                                                ...old,
-                                                assetRisk: v
-                                            }))}
+                                            onValueChange={(v: any) =>
+                                                updateTrade(abs, (old) => ({
+                                                    ...old,
+                                                    assetRisk: v,
+                                                }))
+                                            }
                                         >
-                                            <SelectTrigger className="bg-input">
-                                                <SelectValue/>
+                                            <SelectTrigger
+                                                className={cn(
+                                                    "bg-input",
+                                                    t.assetRisk === "Low" && "bg-emerald-100 text-emerald-900 border-emerald-200 focus:ring-emerald-200",
+                                                    t.assetRisk === "Medium" && "bg-amber-100 text-amber-900 border-amber-200 focus:ring-amber-200",
+                                                    t.assetRisk === "High" && "bg-rose-100 text-rose-900 border-rose-200 focus:ring-rose-200"
+                                                )}
+                                            >
+                                                <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="Low">Low</SelectItem>
@@ -756,12 +729,17 @@ export function SuitabilityWorkspace() {
 
                                     <div className="space-y-1.5">
                                         <Label>Trade Option</Label>
-                                        <Select value={t.side} onValueChange={(v: any) => updateTrade(abs, (old) => ({
-                                            ...old,
-                                            side: v
-                                        }))}>
+                                        <Select
+                                            value={t.side}
+                                            onValueChange={(v: any) =>
+                                                updateTrade(abs, (old) => ({
+                                                    ...old,
+                                                    side: v,
+                                                }))
+                                            }
+                                        >
                                             <SelectTrigger className="bg-input">
-                                                <SelectValue/>
+                                                <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="Buy">Buy</SelectItem>
@@ -774,14 +752,16 @@ export function SuitabilityWorkspace() {
                                     <div className="space-y-1.5">
                                         <Label>{t.side === "Sell" ? "Quantity" : "Amount"}</Label>
                                         <Input
-                                               className={`bg-input ${showErrors && errors.trades[abs]?.quantity ? "border-red-500" : ""}`}
-                                               inputMode="numeric"
-                                               value={t.quantity}
-                                               onChange={(e) => updateTrade(abs, (old) => ({
-                                                   ...old,
-                                                   quantity: e.target.value
-                                               }))}
-                                               placeholder="e.g. 100"
+                                            className={`bg-input ${showErrors && errors.trades[abs]?.quantity ? "border-red-500" : ""}`}
+                                            inputMode="numeric"
+                                            value={t.quantity}
+                                            onChange={(e) =>
+                                                updateTrade(abs, (old) => ({
+                                                    ...old,
+                                                    quantity: e.target.value,
+                                                }))
+                                            }
+                                            placeholder="e.g. 100"
                                         />
                                         {showErrors && <FieldError error={errors.trades[abs]?.quantity} />}
                                     </div>
@@ -789,13 +769,15 @@ export function SuitabilityWorkspace() {
                                     <div className="space-y-1.5">
                                         <Label>Date of Trade</Label>
                                         <Input
-                                               className={`bg-input ${showErrors && errors.trades[abs]?.dateOfTrade ? "border-red-500" : ""}`}
-                                               value={t.dateOfTrade}
-                                               onChange={(e) => updateTrade(abs, (old) => ({
-                                                   ...old,
-                                                   dateOfTrade: e.target.value
-                                               }))}
-                                               placeholder="e.g. 10/09/2025"
+                                            className={`bg-input ${showErrors && errors.trades[abs]?.dateOfTrade ? "border-red-500" : ""}`}
+                                            value={t.dateOfTrade}
+                                            onChange={(e) =>
+                                                updateTrade(abs, (old) => ({
+                                                    ...old,
+                                                    dateOfTrade: e.target.value,
+                                                }))
+                                            }
+                                            placeholder="e.g. 10/09/2025"
                                         />
                                         {showErrors && <FieldError error={errors.trades[abs]?.dateOfTrade} />}
                                     </div>
@@ -803,17 +785,18 @@ export function SuitabilityWorkspace() {
                                     <div className="space-y-1.5">
                                         <Label>Time of Trade</Label>
                                         <Input
-                                               className={`bg-input ${showErrors && errors.trades[abs]?.timeOfTrade ? "border-red-500" : ""}`}
-                                               value={t.timeOfTrade}
-                                               onChange={(e) => updateTrade(abs, (old) => ({
-                                                   ...old,
-                                                   timeOfTrade: e.target.value
-                                               }))}
-                                               placeholder="e.g. 10:30"
+                                            className={`bg-input ${showErrors && errors.trades[abs]?.timeOfTrade ? "border-red-500" : ""}`}
+                                            value={t.timeOfTrade}
+                                            onChange={(e) =>
+                                                updateTrade(abs, (old) => ({
+                                                    ...old,
+                                                    timeOfTrade: e.target.value,
+                                                }))
+                                            }
+                                            placeholder="e.g. 10:30"
                                         />
                                         {showErrors && <FieldError error={errors.trades[abs]?.timeOfTrade} />}
                                     </div>
-
                                 </div>
 
                                 {/* Reasons + Calculator */}
@@ -835,7 +818,7 @@ export function SuitabilityWorkspace() {
                                                             updateTrade(abs, (old) => {
                                                                 const reasons = [...old.reasons] as [string, string, string];
                                                                 reasons[idx] = e.target.value;
-                                                                return {...old, reasons};
+                                                                return { ...old, reasons };
                                                             })
                                                         }
                                                         placeholder={`Enter reason ${idx + 1}...`}
@@ -879,7 +862,7 @@ export function SuitabilityWorkspace() {
                                 </PaginationItem>
 
                                 {totalPages <= 6 ? (
-                                    Array.from({length: totalPages}).map((_, i) => (
+                                    Array.from({ length: totalPages }).map((_, i) => (
                                         <PaginationItem key={i}>
                                             <PaginationLink isActive={page === i + 1} onClick={() => setPage(i + 1)}>
                                                 {i + 1}
@@ -895,7 +878,7 @@ export function SuitabilityWorkspace() {
                                         </PaginationItem>
                                         {page > 3 && (
                                             <PaginationItem>
-                                                <PaginationEllipsis/>
+                                                <PaginationEllipsis />
                                             </PaginationItem>
                                         )}
                                         {[page - 1, page, page + 1]
@@ -909,12 +892,11 @@ export function SuitabilityWorkspace() {
                                             ))}
                                         {page < totalPages - 2 && (
                                             <PaginationItem>
-                                                <PaginationEllipsis/>
+                                                <PaginationEllipsis />
                                             </PaginationItem>
                                         )}
                                         <PaginationItem>
-                                            <PaginationLink isActive={page === totalPages}
-                                                            onClick={() => setPage(totalPages)}>
+                                            <PaginationLink isActive={page === totalPages} onClick={() => setPage(totalPages)}>
                                                 {totalPages}
                                             </PaginationLink>
                                         </PaginationItem>
@@ -941,9 +923,9 @@ export function SuitabilityWorkspace() {
                         Ready to generate a suitability letter or save a draft?
                     </div>
                     <div className="flex gap-3">
-                        <LetterPreviewSheet form={form}/>
+                        <LetterPreviewSheet form={form} />
                         <Button>
-                            <SuitabilityLetterPDF form={form} onBeforeSave={validateBeforeSave}/>
+                            <SuitabilityLetterPDF form={form} onBeforeSave={validateBeforeSave} />
                         </Button>
                     </div>
                 </div>
