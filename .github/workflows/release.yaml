@@ -3,17 +3,23 @@ name: Release App
 on:
   push:
     tags:
-      - 'v*' # Triggers when you push a tag like v0.1.0
-  workflow_dispatch: # Allows manual triggering from GitHub UI
+      - 'v*'
+  workflow_dispatch:
 
 jobs:
   release:
     permissions:
-      contents: write # Needed to upload the .exe/.dmg to the release
+      contents: write
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, windows-latest]
+        include:
+          - platform: 'macos-latest' # Apple Silicon
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest' # Intel Mac
+            args: '--target x86_64-apple-darwin'
+          - platform: 'windows-latest'
+            args: ''
 
     runs-on: ${{ matrix.platform }}
 
@@ -35,7 +41,7 @@ jobs:
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          # On Mac, we want to support both Apple Silicon (native) and Intel (target)
+          # Install both targets on Mac to allow cross-compilation
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Install frontend dependencies
@@ -45,10 +51,10 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # No Apple Certificates provided = Ad-Hoc Signing (Free, but shows warnings)
         with:
-          tagName: v__VERSION__ # Will automatically match your package.json version
+          tagName: v__VERSION__
           releaseName: 'Suitability App v__VERSION__'
           releaseBody: 'See the assets below to download and install.'
           releaseDraft: true
           prerelease: false
+          args: ${{ matrix.args }}
