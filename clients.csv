@@ -1,7 +1,7 @@
 firstName,lastName,investmentManager,knowledgeExperience,lossPct,accountNumber,salutation,objective,risk,email,phone,address
-John,Doe,Turon Miah,High,20,AC-1001,Mr,Growth,High,john.doe@example.com,+44 7700 900000,123 Baker St London
+John,Doe,Sam Miah,High,20,AC-1001,Mr,Growth,High,john.doe@example.com,+44 7700 900000,123 Baker St London
 Jane,Smith,Shayek Ahmed,Medium,15,AC-1002,Ms,Balanced,Medium,jane.smith@example.com,+44 7700 900001,45 Oxford St London
-Robert,Brown,Turon Miah,Low,10,AC-1003,Mr,Income,Low,robert.brown@example.com,+44 7700 900002,10 Downing St London
-Emily,Davis,Shayek Ahmed,High,25,AC-1004,Dr,Growth,High,emily.davis@example.com,+44 7700 900003,221B Baker St London
+Robert,Brown,Tarek Miah,Low,10,AC-1003,Mr,Income,Low,robert.brown@example.com,+44 7700 900002,10 Downing St London
+Emily,Davis,Tarek Ahmed,High,25,AC-1004,Dr,Growth,High,emily.davis@example.com,+44 7700 900003,221B Baker St London
 Michael,Wilson,Turon Miah,Medium,20,AC-1005,Mr,Balanced,Medium,michael.wilson@example.com,+44 7700 900004,15 Hyde Park London
-Sarah,Taylor,Shayek Ahmed,Low,5,AC-1006,Ms,Income,Low,sarah.taylor@example.com,+44 7700 900005,88 Regent St London
+Sarah,Taylor,Tarek Ahmed,Low,5,AC-1006,Ms,Income,Low,sarah.taylor@example.com,+44 7700 900005,88 Regent St London

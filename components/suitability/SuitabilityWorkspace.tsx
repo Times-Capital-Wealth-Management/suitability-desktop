@@ -27,31 +27,12 @@ import { Plus, Trash2 } from "lucide-react";
 import LetterPreviewSheet from "./LetterPreviewSheet";
 import dynamic from "next/dynamic";
 import UpsideDownsideCalculator from "@/components/calculator";
-import Database from "@tauri-apps/plugin-sql";
-import { isTauri } from "@/lib/tauri";
 import { ClientSelector } from "@/components/client-selector";
 import { cn } from "@/lib/utils";
+import { clientProvider } from "@/lib/data-provider";
+import { type Client } from "@/lib/database";
 
 /* -------------------- Types -------------------- */
-
-// We define a local client type that matches the form's specific union types
-type Client = {
-    id: string;
-    firstName: string;
-    lastName: string;
-    investmentManager?: string | null;
-    knowledgeExperience: "Low" | "Medium" | "High";
-    lossPct: number;
-    accountNumber: string;
-    salutation?: string | null;
-    objective: "Balance" | "Capital Growth" | "Income";
-    risk: "Low" | "Medium" | "High";
-    email?: string | null;
-    phone?: string | null;
-    address?: string | null;
-};
-
-type ClientList = { items: Client[]; total: number };
 
 type Trade = {
     assetName: string;
@@ -212,98 +193,6 @@ function FieldError({ error }: { error: FieldError }) {
     return <p className="text-sm text-red-500 mt-1">{error}</p>;
 }
 
-/* -------------------- Helper Functions -------------------- */
-
-// Fetch all clients - works in both Tauri and browser
-async function fetchAllClients(): Promise<Client[]> {
-    if (isTauri()) {
-        try {
-            const db = await Database.load("sqlite:timescapital.db");
-            const rows = await db.select<Client[]>(`
-                SELECT
-                    id,
-                    first_name as firstName,
-                    last_name as lastName,
-                    investment_manager as investmentManager,
-                    knowledge_experience as knowledgeExperience,
-                    loss_pct as lossPct,
-                    account_number as accountNumber,
-                    salutation,
-                    objective,
-                    risk,
-                    email,
-                    phone,
-                    address
-                FROM clients
-                ORDER BY last_name, first_name
-            `);
-            return rows;
-        } catch (error) {
-            console.error("SQLite error:", error);
-            return [];
-        }
-    }
-
-    // Browser: try API first
-    try {
-        const res = await fetch("/api/clients", { cache: "no-store" });
-        if (res.ok) {
-            const data = (await res.json()) as ClientList;
-            return data.items as Client[];
-        }
-    } catch {
-        // API not available
-    }
-
-    return [];
-}
-
-// Fetch single client by ID
-async function fetchClientById(id: string): Promise<Client | null> {
-    if (isTauri()) {
-        try {
-            const db = await Database.load("sqlite:timescapital.db");
-            const rows = await db.select<Client[]>(
-                `
-                    SELECT
-                        id,
-                        first_name as firstName,
-                        last_name as lastName,
-                        investment_manager as investmentManager,
-                        knowledge_experience as knowledgeExperience,
-                        loss_pct as lossPct,
-                        account_number as accountNumber,
-                        salutation,
-                        objective,
-                        risk,
-                        email,
-                        phone,
-                        address
-                    FROM clients
-                    WHERE id = $1
-                `,
-                [id]
-            );
-            return rows.length > 0 ? rows[0] : null;
-        } catch (error) {
-            console.error("SQLite error:", error);
-            return null;
-        }
-    }
-
-    // Browser: try API first
-    try {
-        const res = await fetch(`/api/clients/${id}`, { cache: "no-store" });
-        if (res.ok) {
-            return (await res.json()) as Client;
-        }
-    } catch {
-        // API not available
-    }
-
-    return null;
-}
-
 /* -------------------- Component -------------------- */
 
 export function SuitabilityWorkspace() {
@@ -359,11 +248,12 @@ export function SuitabilityWorkspace() {
         let cancelled = false;
         setLoadingClients(true);
 
-        fetchAllClients()
+        clientProvider.getAll()
             .then((data) => {
-                if (!cancelled) setClients(data);
+                if (!cancelled) setClients(data.items);
             })
-            .catch(() => {
+            .catch((err) => {
+                console.error("Failed to load clients", err);
                 if (!cancelled) setClients([]);
             })
             .finally(() => {
@@ -380,11 +270,11 @@ export function SuitabilityWorkspace() {
         let cancelled = false;
         if (!form.clientId) return;
 
-        fetchClientById(form.clientId)
+        clientProvider.getById(form.clientId)
             .then((c) => {
                 if (cancelled || !c) return;
 
-                // [!FIX] Normalize Objective: "Balanced" -> "Balance" etc.
+                // Normalize Objective: "Balanced" -> "Balance" etc.
                 const validObjectives = ["Balance", "Capital Growth", "Income"];
                 let normalizedObjective = c.objective as string;
 
@@ -398,15 +288,15 @@ export function SuitabilityWorkspace() {
                     ...s,
                     clientName: `${c.firstName} ${c.lastName}`,
                     investmentManager: c.investmentManager ?? s.investmentManager,
-                    knowledgeExperience: c.knowledgeExperience ?? s.knowledgeExperience,
+                    knowledgeExperience: (c.knowledgeExperience as any) ?? s.knowledgeExperience,
                     capacityOfLoss: `${c.lossPct}%`,
                     accountNumber: c.accountNumber ?? s.accountNumber,
                     salutation: c.salutation ?? s.salutation,
                     objective: normalizedObjective as "Balance" | "Capital Growth" | "Income",
-                    risk: c.risk ?? s.risk,
+                    risk: (c.risk as any) ?? s.risk,
                 }));
             })
-            .catch(() => null);
+            .catch((err) => console.error("Failed to load client details", err));
 
         return () => {
             cancelled = true;
