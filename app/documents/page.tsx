@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { BaseDirectory, readDir, remove, stat } from '@tauri-apps/plugin-fs';
 import DocumentList from './document-list';
 import { isTauri } from '@/lib/tauri';
+// Import the native dialog helper
+import { confirmDialog } from '@/lib/file-utils';
 
 type FileData = {
     name: string;
@@ -15,7 +17,6 @@ export default function Page() {
     const [loading, setLoading] = useState(true);
 
     const loadFiles = async () => {
-        // Guard: If not running in Tauri (e.g. browser dev), stop here
         if (!isTauri()) {
             console.log("Not in Tauri environment");
             setLoading(false);
@@ -23,12 +24,12 @@ export default function Page() {
         }
 
         try {
-            // 1. Read the Suitability directory inside Documents
+            // 1. Read the Suitability directory
             const entries = await readDir('Suitability', {
                 baseDir: BaseDirectory.Document,
             });
 
-            // 2. Filter for PDFs and get their creation stats
+            // 2. Filter for PDFs and get metadata
             const filePromises = entries
                 .filter((entry) => entry.isFile && entry.name.endsWith('.pdf'))
                 .map(async (entry) => {
@@ -37,7 +38,7 @@ export default function Page() {
                             baseDir: BaseDirectory.Document
                         });
 
-                        // FIX: use 'birthtime' (lowercase) and fallback to mtime
+                        // Handle date fallback safely
                         const date = metadata.birthtime || metadata.mtime || new Date();
 
                         return {
@@ -50,11 +51,10 @@ export default function Page() {
                     }
                 });
 
-            // 3. Resolve all promises and filter out any failed reads
             const results = await Promise.all(filePromises);
             const validFiles = results.filter((f): f is FileData => f !== null);
 
-            // 4. Sort by newest first
+            // Sort newest first
             validFiles.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
 
             setFiles(validFiles);
@@ -70,17 +70,24 @@ export default function Page() {
     }, []);
 
     const handleDelete = async (fileName: string) => {
-        if (!confirm(`Are you sure you want to delete ${fileName}?`)) return;
+        // [!IMPORTANT] We must 'await' the result.
+        // Without 'await', the code sees the Promise object as "true" and deletes immediately.
+        const confirmed = await confirmDialog(
+            'Delete Document',
+            `Are you sure you want to delete ${fileName}?`
+        );
+
+        if (!confirmed) return;
 
         try {
             await remove(`Suitability/${fileName}`, {
                 baseDir: BaseDirectory.Document
             });
-            // Refresh the list after deletion
+
+            // Refresh list
             loadFiles();
         } catch (error) {
             console.error("Failed to delete file:", error);
-            alert("Failed to delete file");
         }
     };
 
