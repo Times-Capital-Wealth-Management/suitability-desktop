@@ -1,14 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
-import { deleteFile } from './actions';
 
 type FileData = {
     name: string;
     created: string;
 };
 
-export default function DocumentList({ files }: { files: FileData[] }) {
+// Add onDelete to props
+type DocumentListProps = {
+    files: FileData[];
+    onDelete: (fileName: string) => void;
+};
+
+export default function DocumentList({ files, onDelete }: DocumentListProps) {
     const [view, setView] = useState<'all' | 'today'>('all');
 
     const isToday = (dateStr: string) => {
@@ -68,7 +73,7 @@ export default function DocumentList({ files }: { files: FileData[] }) {
                         </div>
 
                         <button
-                            onClick={() => deleteFile(file.name)}
+                            onClick={() => onDelete(file.name)}
                             className="opacity-0 group-hover:opacity-100 transition-opacity text-sm text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-md font-medium"
                         >
                             Delete
