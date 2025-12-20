@@ -30,8 +30,7 @@ import UpsideDownsideCalculator from "@/components/calculator";
 import Database from "@tauri-apps/plugin-sql";
 import { isTauri } from "@/lib/tauri";
 import { ClientSelector } from "@/components/client-selector";
-import { MOCK_CLIENTS } from "@/app/clients/data";
-import { cn } from "@/lib/utils"; // Imported for conditional styling
+import { cn } from "@/lib/utils";
 
 /* -------------------- Types -------------------- */
 
@@ -240,12 +239,12 @@ async function fetchAllClients(): Promise<Client[]> {
             `);
             return rows;
         } catch (error) {
-            console.error("SQLite error, falling back to mock data:", error);
-            return MOCK_CLIENTS.items as Client[];
+            console.error("SQLite error:", error);
+            return [];
         }
     }
 
-    // Browser: try API first, then fall back to mock data
+    // Browser: try API first
     try {
         const res = await fetch("/api/clients", { cache: "no-store" });
         if (res.ok) {
@@ -256,7 +255,7 @@ async function fetchAllClients(): Promise<Client[]> {
         // API not available
     }
 
-    return MOCK_CLIENTS.items as Client[];
+    return [];
 }
 
 // Fetch single client by ID
@@ -288,10 +287,11 @@ async function fetchClientById(id: string): Promise<Client | null> {
             return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             console.error("SQLite error:", error);
+            return null;
         }
     }
 
-    // Browser: try API first, then fall back to mock data
+    // Browser: try API first
     try {
         const res = await fetch(`/api/clients/${id}`, { cache: "no-store" });
         if (res.ok) {
@@ -301,9 +301,7 @@ async function fetchClientById(id: string): Promise<Client | null> {
         // API not available
     }
 
-    // Fallback to mock data
-    const client = MOCK_CLIENTS.items.find((c) => c.id === id);
-    return (client as Client) || null;
+    return null;
 }
 
 /* -------------------- Component -------------------- */
@@ -385,6 +383,17 @@ export function SuitabilityWorkspace() {
         fetchClientById(form.clientId)
             .then((c) => {
                 if (cancelled || !c) return;
+
+                // [!FIX] Normalize Objective: "Balanced" -> "Balance" etc.
+                const validObjectives = ["Balance", "Capital Growth", "Income"];
+                let normalizedObjective = c.objective as string;
+
+                if (!validObjectives.includes(normalizedObjective)) {
+                    if (normalizedObjective === "Balanced") normalizedObjective = "Balance";
+                    else if (normalizedObjective === "Growth") normalizedObjective = "Capital Growth";
+                    else normalizedObjective = "Balance"; // Default fallback
+                }
+
                 setForm((s) => ({
                     ...s,
                     clientName: `${c.firstName} ${c.lastName}`,
@@ -393,7 +402,7 @@ export function SuitabilityWorkspace() {
                     capacityOfLoss: `${c.lossPct}%`,
                     accountNumber: c.accountNumber ?? s.accountNumber,
                     salutation: c.salutation ?? s.salutation,
-                    objective: c.objective ?? s.objective,
+                    objective: normalizedObjective as "Balance" | "Capital Growth" | "Income",
                     risk: c.risk ?? s.risk,
                 }));
             })

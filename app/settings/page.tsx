@@ -167,7 +167,7 @@ export default function SettingsPage() {
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Application</span>
-              <span>Times Capital Wealth Management</span>
+              <span>Vinco Wealth Management</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Version</span>

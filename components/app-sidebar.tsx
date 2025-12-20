@@ -94,9 +94,9 @@ export function AppSidebar() {
                     <div
                         ref={brandRef}
                         className="text-xs font-semibold whitespace-nowrap truncate"
-                        title="Times Capital Wealth Management"
+                        title="Vinco Wealth Management"
                     >
-                        Times Capital Wealth Management
+                        Vinco Wealth Management
                     </div>
                 </div>
             </SidebarHeader>

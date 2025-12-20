@@ -1,47 +1,108 @@
-"use client";
+'use client';
 
-import { Card } from "@/components/ui/card";
-import { FileText, FolderOpen } from "lucide-react";
-import { useTauri } from "@/hooks/use-tauri";
+import React, { useEffect, useState } from 'react';
+import { BaseDirectory, readDir, remove, stat } from '@tauri-apps/plugin-fs';
+import DocumentList from './document-list';
+import { isTauri } from '@/lib/tauri';
+// Import the native dialog helper
+import { confirmDialog } from '@/lib/file-utils';
 
-export default function DocumentsPage() {
-  const { isDesktop } = useTauri();
+type FileData = {
+    name: string;
+    created: string;
+};
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-semibold">Documents</h2>
-        <p className="text-muted-foreground">
-          Company documents and file management
-        </p>
-      </div>
+export default function Page() {
+    const [files, setFiles] = useState<FileData[]>([]);
+    const [loading, setLoading] = useState(true);
 
-      <Card className="p-12 flex flex-col items-center justify-center text-center">
-        <div className="p-4 bg-muted rounded-full mb-4">
-          <FolderOpen className="h-8 w-8 text-muted-foreground" />
-        </div>
-        <h3 className="font-semibold text-lg mb-2">Document Storage</h3>
-        <p className="text-muted-foreground max-w-md">
-          {isDesktop
-            ? "Connect to your local file system or cloud storage to manage documents."
-            : "Document management features coming soon. Connect with Dropbox or other cloud services."}
-        </p>
-      </Card>
+    const loadFiles = async () => {
+        if (!isTauri()) {
+            console.log("Not in Tauri environment");
+            setLoading(false);
+            return;
+        }
 
-      {/* Placeholder for future document list */}
-      <div className="grid gap-4 md:grid-cols-3">
-        {[1, 2, 3].map((i) => (
-          <Card key={i} className="p-4 opacity-50">
-            <div className="flex items-center gap-3">
-              <FileText className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <div className="h-4 w-32 bg-muted rounded" />
-                <div className="h-3 w-20 bg-muted rounded mt-1" />
-              </div>
+        try {
+            // 1. Read the Suitability directory
+            const entries = await readDir('Suitability', {
+                baseDir: BaseDirectory.Document,
+            });
+
+            // 2. Filter for PDFs and get metadata
+            const filePromises = entries
+                .filter((entry) => entry.isFile && entry.name.endsWith('.pdf'))
+                .map(async (entry) => {
+                    try {
+                        const metadata = await stat(`Suitability/${entry.name}`, {
+                            baseDir: BaseDirectory.Document
+                        });
+
+                        // Handle date fallback safely
+                        const date = metadata.birthtime || metadata.mtime || new Date();
+
+                        return {
+                            name: entry.name,
+                            created: new Date(date).toISOString(),
+                        };
+                    } catch (e) {
+                        console.error(`Failed to stat file ${entry.name}`, e);
+                        return null;
+                    }
+                });
+
+            const results = await Promise.all(filePromises);
+            const validFiles = results.filter((f): f is FileData => f !== null);
+
+            // Sort newest first
+            validFiles.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
+
+            setFiles(validFiles);
+        } catch (error) {
+            console.error('Error reading documents:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadFiles();
+    }, []);
+
+    const handleDelete = async (fileName: string) => {
+        // [!IMPORTANT] We must 'await' the result.
+        // Without 'await', the code sees the Promise object as "true" and deletes immediately.
+        const confirmed = await confirmDialog(
+            'Delete Document',
+            `Are you sure you want to delete ${fileName}?`
+        );
+
+        if (!confirmed) return;
+
+        try {
+            await remove(`Suitability/${fileName}`, {
+                baseDir: BaseDirectory.Document
+            });
+
+            // Refresh list
+            loadFiles();
+        } catch (error) {
+            console.error("Failed to delete file:", error);
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-white p-8 md:p-12">
+            <div className="max-w-3xl mx-auto mb-8">
+                <h1 className="text-2xl font-semibold tracking-tight">Suitability Files</h1>
+                <p className="text-gray-500 mt-1 text-sm">Manage your generated suitability reports.</p>
             </div>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
+
+            {loading ? (
+                <div className="max-w-3xl mx-auto text-sm text-gray-500">Loading documents...</div>
+            ) : (
+                <DocumentList files={files} onDelete={handleDelete} />
+            )}
+        </div>
+    );
 }
