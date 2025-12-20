@@ -221,13 +221,13 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 </Text>
 
                 <Text style={styles.section}>
-                    1.	A suitability assessment will be performed at least annually.
+                    1.  A suitability assessment will be performed at least annually.
                 </Text>
                 <Text style={styles.list}>
-                    2.	The following information may be subject to full/partial reassessment;
+                    2.  The following information may be subject to full/partial reassessment;
                 </Text>
                 <Text style={styles.list}>
-                    (i)	Your investment objectives
+                    (i) Your investment objectives
                 </Text>
                 <Text style={styles.list}>
                     (ii) Your risk tolerance
@@ -237,12 +237,12 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 </Text>
 
                 <Text style={styles.section}>
-                    3.	A suitability re-assessment will be required should your financial circumstances
+                    3.  A suitability re-assessment will be required should your financial circumstances
                     change at any time.
                 </Text>
 
                 <Text style={styles.section}>
-                    4.	If it is decided that you are no longer suitable for this product, an updated
+                    4.  If it is decided that you are no longer suitable for this product, an updated
                     recommendation will be communicated to you by e-mail.
                 </Text>
 
@@ -316,26 +316,23 @@ export default function SuitabilityLetterPDF({ form, onBeforeSave }: Suitability
             const fileName = generateFileName(form);
 
             if (isTauri()) {
-                // Tauri: Save to Documents/Suitability folder
-                const { join, documentDir } = await import("@tauri-apps/api/path");
-                const { writeFile, mkdir, exists } = await import("@tauri-apps/plugin-fs");
+                // Tauri: Save to Documents/Suitability folder using BaseDirectory
+                const { writeFile, mkdir, exists, BaseDirectory } = await import("@tauri-apps/plugin-fs");
                 const { message, ask } = await import("@tauri-apps/plugin-dialog");
+                const { join, documentDir } = await import("@tauri-apps/api/path");
 
-                // Get Documents path and create Suitability subfolder
-                const documentsPath = await documentDir();
-                const suitabilityFolder = await join(documentsPath, "Suitability");
+                const folderName = "Suitability";
 
-                // Create folder if it doesn't exist
-                const folderExists = await exists(suitabilityFolder);
+                // Ensure 'Suitability' folder exists in Documents (Relative check)
+                const folderExists = await exists(folderName, { baseDir: BaseDirectory.Document });
                 if (!folderExists) {
-                    await mkdir(suitabilityFolder, { recursive: true });
+                    await mkdir(folderName, { baseDir: BaseDirectory.Document, recursive: true });
                 }
 
-                // Full file path
-                const filePath = await join(suitabilityFolder, fileName);
+                // Check if file exists using relative path "Suitability/filename.pdf"
+                const relativePath = `${folderName}/${fileName}`;
+                const fileExists = await exists(relativePath, { baseDir: BaseDirectory.Document });
 
-                // Check if file already exists
-                const fileExists = await exists(filePath);
                 if (fileExists) {
                     const shouldReplace = await ask(
                         `A file named "${fileName}" already exists.\n\nDo you want to replace it?`,
@@ -355,10 +352,16 @@ export default function SuitabilityLetterPDF({ form, onBeforeSave }: Suitability
 
                 const buffer = await blob.arrayBuffer();
                 const uint8Array = new Uint8Array(buffer);
-                await writeFile(filePath, uint8Array);
+
+                // Write file using BaseDirectory.Document
+                await writeFile(relativePath, uint8Array, { baseDir: BaseDirectory.Document });
+
+                // Construct full path only for the success message
+                const documentsPath = await documentDir();
+                const fullDisplayPath = await join(documentsPath, folderName, fileName);
 
                 // Show success message
-                await message(`Letter saved to:\n${filePath}`, { title: "Success", kind: "info" });
+                await message(`Letter saved to:\n${fullDisplayPath}`, { title: "Success", kind: "info" });
             } else {
                 // Browser: Trigger download with auto-generated name
                 const url = URL.createObjectURL(blob);

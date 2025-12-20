@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { BaseDirectory, readDir, remove, stat } from '@tauri-apps/plugin-fs';
+import { BaseDirectory, readDir, remove, stat, exists, mkdir } from '@tauri-apps/plugin-fs';
 import DocumentList from './document-list';
 import { isTauri } from '@/lib/tauri';
 import { confirmDialog } from '@/lib/file-utils';
@@ -16,6 +16,7 @@ type FileData = {
 export default function DocumentsPage() {
     const [files, setFiles] = useState<FileData[]>([]);
     const [loading, setLoading] = useState(true);
+    const folderName = 'Suitability';
 
     const loadFiles = async () => {
         if (!isTauri()) {
@@ -25,21 +26,31 @@ export default function DocumentsPage() {
         }
 
         try {
-            // 1. Read the Suitability directory
-            const entries = await readDir('Suitability', {
+            // 1. Ensure the directory exists first to avoid errors
+            const dirExists = await exists(folderName, { baseDir: BaseDirectory.Document });
+            if (!dirExists) {
+                // If it doesn't exist, just create it silently or return empty
+                await mkdir(folderName, { baseDir: BaseDirectory.Document, recursive: true });
+                setFiles([]);
+                setLoading(false);
+                return;
+            }
+
+            // 2. Read the Suitability directory using BaseDirectory
+            const entries = await readDir(folderName, {
                 baseDir: BaseDirectory.Document,
             });
 
-            // 2. Filter for PDFs and get metadata
+            // 3. Filter for PDFs and get metadata
             const filePromises = entries
                 .filter((entry) => entry.isFile && entry.name.endsWith('.pdf'))
                 .map(async (entry) => {
                     try {
-                        const metadata = await stat(`Suitability/${entry.name}`, {
+                        // Use relative path matching the save logic
+                        const metadata = await stat(`${folderName}/${entry.name}`, {
                             baseDir: BaseDirectory.Document
                         });
 
-                        // Handle date fallback safely
                         const date = metadata.birthtime || metadata.mtime || new Date();
 
                         return {
@@ -55,9 +66,7 @@ export default function DocumentsPage() {
             const results = await Promise.all(filePromises);
             const validFiles = results.filter((f): f is FileData => f !== null);
 
-            // Sort newest first
             validFiles.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
-
             setFiles(validFiles);
         } catch (error) {
             console.error('Error reading documents:', error);
@@ -79,7 +88,8 @@ export default function DocumentsPage() {
         if (!confirmed) return;
 
         try {
-            await remove(`Suitability/${fileName}`, {
+            // Delete using relative path
+            await remove(`${folderName}/${fileName}`, {
                 baseDir: BaseDirectory.Document
             });
             loadFiles();
@@ -90,13 +100,11 @@ export default function DocumentsPage() {
 
     return (
         <div className="space-y-8 p-4 md:p-8 max-w-7xl mx-auto">
-            {/* Header with Unified Accent Style */}
             <div className="flex items-start gap-4 border-b pb-6 border-border/40">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-sm">
                     <FileText className="h-6 w-6" />
                 </div>
                 <div className="space-y-1">
-                    {/* text-foreground ensures this is white in dark mode */}
                     <h1 className="text-3xl font-bold tracking-tight text-foreground">
                         Suitability Files
                     </h1>
@@ -106,16 +114,13 @@ export default function DocumentsPage() {
                 </div>
             </div>
 
-            {/* Content Area */}
             {loading ? (
                 <div className="space-y-4">
-                    {/* Skeleton Loaders */}
                     {[1, 2, 3].map((i) => (
                         <div key={i} className="h-20 w-full rounded-xl bg-muted/40 animate-pulse" />
                     ))}
                 </div>
             ) : files.length === 0 ? (
-                /* Empty State with Complementary Colors */
                 <Card className="flex flex-col items-center justify-center py-16 text-center border-dashed border-2 bg-muted/5 rounded-2xl">
                     <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary mb-4 shadow-sm">
                         <FolderOpen className="h-8 w-8" />
@@ -126,7 +131,6 @@ export default function DocumentsPage() {
                     </p>
                 </Card>
             ) : (
-                /* Document List Container */
                 <Card className="rounded-2xl border shadow-sm bg-card overflow-hidden transition-all hover:shadow-md">
                     <DocumentList files={files} onDelete={handleDelete} />
                 </Card>
