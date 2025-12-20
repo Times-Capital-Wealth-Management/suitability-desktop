@@ -39,7 +39,7 @@ fn get_app_version() -> String {
 // Greet command (example)
 #[tauri::command]
 fn greet(name: &str) -> String {
-    format!("Hello, {}! Welcome to Times Capital.", name)
+    format!("Hello, {}! Welcome to Vinco Wealth.", name)
 }
 
 fn main() {
@@ -132,12 +132,12 @@ fn main() {
         ])
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();
-            window.set_title("Times Capital Wealth Management").unwrap();
+            window.set_title("Vinco Wealth Management").unwrap();
 
             #[cfg(debug_assertions)]
             {
-                println!("Times Capital app started successfully!");
-                println!("Database will be created at: timescapital.db");
+                println!("Vinco Wealth Management app started successfully!");
+                println!("Database will be created at: vincowealth.db");
             }
 
             Ok(())

@@ -1,47 +1,52 @@
 "use client";
 
 import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-    SheetFooter,
-    SheetClose,
-} from "@/components/ui/sheet";
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter,
+    DialogClose,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { FileText } from "lucide-react";
 import type { SuitabilityFormState } from "./SuitabilityWorkspace";
 
-export default function LetterPreviewSheet({ form }: { form: SuitabilityFormState }) {
+export default function LetterPreviewModal({ form }: { form: SuitabilityFormState }) {
     return (
-        <Sheet>
-            <SheetTrigger asChild>
-                <Button type="button">Preview letter</Button>
-            </SheetTrigger>
+        <Dialog>
+            <DialogTrigger asChild>
+                <Button type="button" variant="secondary">
+                    <FileText className="mr-2 h-4 w-4" />
+                    Preview Letter
+                </Button>
+            </DialogTrigger>
 
-            <SheetContent side="right" className="w-full sm:w-[560px] pt-12 sm:pt-14 overflow-scroll">
-                <SheetHeader className="sr-only">
-                    <SheetTitle>Suitability letter preview</SheetTitle>
-                </SheetHeader>
+            {/* UPDATED: max-w-5xl makes it wider, h-[85vh] keeps it tall but fits in screen */}
+            <DialogContent className="max-w-5xl h-[85vh] flex flex-col p-0 gap-0 overflow-hidden rounded-xl">
+                <DialogHeader className="px-6 py-4 border-b flex flex-row items-center justify-between bg-muted/40">
+                    <DialogTitle>Suitability Letter Preview</DialogTitle>
+                </DialogHeader>
 
-                <div className="mx-auto max-w-md">
-                    <div className="rounded-2xl border bg-card text-card-foreground shadow-sm overflow-hidden">
-                        {/* Header */}
-                        <div className="px-6 py-5 border-b">
-                            <div className="text-xs uppercase tracking-wide text-muted-foreground">Client</div>
-                            <div className="mt-1 text-base font-medium">
+                <div className="flex-1 overflow-y-auto bg-slate-100/50 p-4 md:p-8 dark:bg-slate-900/50">
+                    {/* Paper Document Container - Fixed A4 width (210mm) centered */}
+                    <div className="mx-auto max-w-[210mm] min-h-[297mm] bg-white text-slate-900 shadow-xl rounded-sm p-8 md:p-12 text-sm leading-relaxed">
+
+                        {/* Header Info */}
+                        <div className="mb-8 border-b pb-4">
+                            <h2 className="text-lg font-bold">
                                 {form.salutation ? `${form.salutation} ` : ""}
                                 {form.clientName || "Client Name"}
-                            </div>
-                            <div className="mt-1 text-xs text-muted-foreground">
+                            </h2>
+                            <p className="text-slate-500 text-xs mt-1">
                                 Account: {form.accountNumber || "—"}
-                            </div>
+                            </p>
                         </div>
 
-                        {/* Body */}
-                        <div className="px-6 py-5 space-y-4 text-sm">
-
-                            <p>
+                        {/* Letter Body */}
+                        <div className="space-y-4">
+                            <p className="text-justify">
                                 The purpose of this report is to relay to you the client the information you have
                                 supplied to the firm with regards to your investment preferences, objectives and other
                                 personal characteristics. This was gathered from the information you provided on your
@@ -51,139 +56,86 @@ export default function LetterPreviewSheet({ form }: { form: SuitabilityFormStat
                                 any areas further, please do not hesitate to contact us.
                             </p>
 
-                            <p className="uppercase font-bold">
-                               Recommendation - {form.trades[0].side}
-                            </p>
-
-                            {/* Trades */}
-                            <div className="pt-2 space-y-3">
-                                {/*
-                                 <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                                    Proposed Transactions
-                                </div>*/}
-
-                                {form.trades.length === 0 ? (
-                                    <div>No trades entered.</div>
-                                ) : (
-                                    <ol className="space-y-4">
-                                        {form.trades.map((t, i) => (
-                                            <li key={i} >
-                                                <div className="font-medium rounded-lg border p-3">
-                                                    {t.side} {t.quantity || "___"} of <strong>{t.assetName || "________"}</strong>{" "}
-                                                    ({t.accountType}) — type: {t.assetType || "—"}, asset risk: {t.assetRisk},
-                                                    time: {t.timeOfTrade || "—"}.
-                                                </div>
-
-                                                {/* Reasons for this trade */}
-                                                {/* <div className="mt-2">
-                                                    <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">
-                                                        Reasons
-                                                    </div>
-                                                    <ul className="list-disc pl-5 space-y-1">
-                                                        {t.reasons.filter(Boolean).length ? (
-                                                            t.reasons.map((r, idx) => <li key={idx}>{r}</li>)
-                                                        ) : (
-                                                            <li>No reasons provided for this trade.</li>
-                                                        )}
-                                                    </ul>
-                                                </div> */}
-                                            </li>
-                                        ))}
-                                    </ol>
-                                )}
+                            <div className="py-2">
+                                <span className="uppercase font-bold border-b-2 border-slate-200 pb-1">
+                                    Recommendation - {form.trades[0]?.side || "—"}
+                                </span>
                             </div>
-                            <p>
+
+                            {/* Trades List */}
+                            {form.trades.length === 0 ? (
+                                <div className="italic text-slate-500">No trades entered.</div>
+                            ) : (
+                                <div className="space-y-6">
+                                    {form.trades.map((t, i) => (
+                                        <div key={i} className="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                                            <div className="font-semibold text-base mb-2">
+                                                {t.side} {t.quantity || "___"} of {t.assetName || "________"} ({t.accountType})
+                                            </div>
+                                            <div className="text-xs text-slate-500 mb-3 font-mono">
+                                                Type: {t.assetType || "—"} | Risk: {t.assetRisk} | Time: {t.timeOfTrade || "—"}
+                                            </div>
+
+                                            <div className="text-slate-700">
+                                                {t.assetName} would be classified as a <strong>{t.assetRisk}</strong> investment.
+                                                We believe as part of your overall portfolio it is suitable for you to {t.side} because:
+                                            </div>
+
+                                            <ul className="list-disc pl-5 mt-2 space-y-1 text-slate-700">
+                                                {t.reasons.filter(Boolean).length ? (
+                                                    t.reasons.map((r, idx) => <li key={idx}>{r}</li>)
+                                                ) : (
+                                                    <li className="italic text-slate-400">No specific reasons provided.</li>
+                                                )}
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            <p className="pt-4">
                                 Dear {form.salutation || "…"} {form.clientName || "…"},
                             </p>
 
-                            {/* Trade Reasons */}
-                            <div className="pt-2 space-y-3">
-                                {/*
-                                 <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                                    Proposed Transactions
-                                </div>*/}
+                            <div className="space-y-4 pt-2">
+                                <div>
+                                    <div className="font-bold underline mb-1">Your Relevant Knowledge and Experience</div>
+                                    <p>The recommendation is considered to suit your relevant knowledge and experience as the firm has assessed you to have a good understanding of equities.</p>
+                                </div>
 
-                                {form.trades.length === 0 ? (
-                                    <div>No trades entered.</div>
-                                ) : (
-                                    <ol className="space-y-4">
-                                        {form.trades.map((t, i) => (
-                                            <li key={i} >
-                                                {/* Reasons for this trade */}
-                                                <div className="mt-2">
-                                                    <div>
-                                                        {/* Reasons */}
-                                                        {t.assetName} would be classified as a {t.assetRisk} investment
-                                                        and with consideration  to you overall risk profile and
-                                                        investment objectives. We believe as  part of your overall
-                                                        portfolio it is suitable for you to {t.side}  because of the
-                                                        following reasons:
-                                                    </div>
-                                                    <ul className="list-disc pl-5 space-y-1">
-                                                        {t.reasons.filter(Boolean).length ? (
-                                                            t.reasons.map((r, idx) => <li key={idx}>{r}</li>)
-                                                        ) : (
-                                                            <li>No reasons provided for this trade.</li>
-                                                        )}
-                                                    </ul>
-                                                </div>
-                                            </li>
-                                        ))}
+                                <div>
+                                    <div className="font-bold underline mb-1">Periodic Review of Suitability</div>
+                                    <p className="mb-2">
+                                        Investing in equities will require us to perform periodic reviews to assess your continued suitability to the product. By following this advice, you agree to:
+                                    </p>
+                                    <ol className="list-decimal pl-5 space-y-1">
+                                        <li>A suitability assessment will be performed at least annually.</li>
+                                        <li>Your investment objectives, risk tolerance, and capacity for loss may be reassessed.</li>
+                                        <li>A suitability re-assessment will be required should your financial circumstances change.</li>
+                                        <li>If you are no longer suitable, an updated recommendation will be communicated.</li>
                                     </ol>
-                                )}
+                                </div>
+
+                                <div className="bg-slate-50 border border-slate-200 p-4 rounded text-sm mt-4">
+                                    <strong>Declaration:</strong> It is strongly advised that you read all the information
+                                    set out in this report for your own benefit and protection. If you do not understand any
+                                    point or your personal circumstances have changed please contact us on 0203 950 3751.
+                                </div>
+
+                                <div className="pt-6 font-medium font-handwriting text-xl">
+                                    Signed: {form.investmentManager || "Investment Manager"}
+                                </div>
                             </div>
-
-                            {/* <p className="pt-2">
-                                If you have any questions, please contact{" "}
-                                <strong>{form.investmentManager || "your investment manager"}</strong>.
-                            </p> */}
-
-                            <p>
-                                <strong><u> Your Relevant Knowledge and Experience</u></strong> <br />
-                                The recommendation is considered to suit your relevant knowledge and experience as the
-                                firm has assessed you to have a good understanding of equities.
-                            </p>
-                            <p>
-
-                                <strong><u> Periodic Review of Suitability </u></strong> <br />
-                                Investing in equities will require us to perform periodic reviews to assess your
-                                continued suitability to the product. By following this advice and opening / closing the
-                                recommended instrument, you will be agreeing to the following conditions: <br />
-
-
-                                1.	A suitability assessment will be performed at least annually. <br />
-
-                                2.	The following information may be subject to full/partial reassessment; <br/>
-                                (i)	Your investment objectives <br />
-                                (ii)	Your risk tolerance <br />
-                                (iii)	Your capacity for loss <br />
-
-                                3.	A suitability re-assessment will be required should your financial circumstances
-                                change at any time. <br />
-
-                                4.	If it is decided that you are no longer suitable for this product, an updated
-                                recommendation will be communicated to you by e-mail. <br />
-                            </p>
-                            <p>
-                                <strong> Declaration:</strong> It is strongly advised that you read all the information
-                                set out in this report for your own benefit and protection. If you do not understand any
-                                point or your personal circumstances have changed please contact us on 0203 950 3751.
-                            </p>
-
-                            {/* <p className="pt-2">Kind regards,</p> */}
-                            <p className="font-medium"> Signed {form.investmentManager || "Investment Manager"}</p>
                         </div>
                     </div>
-
-                    <SheetFooter className="mt-6">
-                        <SheetClose asChild>
-                            <Button type="button" variant="outline" className="w-full rounded-xl">
-                                Close
-                            </Button>
-                        </SheetClose>
-                    </SheetFooter>
                 </div>
-            </SheetContent>
-        </Sheet>
+
+                <DialogFooter className="p-4 border-t bg-background">
+                    <DialogClose asChild>
+                        <Button variant="outline">Close Preview</Button>
+                    </DialogClose>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 }

@@ -1,8 +1,8 @@
 [package]
 name = "times-capital-app"
 version = "0.1.0"
-description = "Times Capital Wealth Management Desktop Application"
-authors = ["Times Capital"]
+description = "Vinco Wealth Management Desktop Application"
+authors = ["Vinco Wealth"]
 edition = "2021"
 
 [build-dependencies]

@@ -21,9 +21,9 @@ export function LoginForm({
               <div className="flex size-8 items-center justify-center rounded-md">
                 <GalleryVerticalEnd className="size-6" />
               </div>
-              <span className="sr-only">Times Capital Wealth Management.</span>
+              <span className="sr-only">Vinco Wealth Management.</span>
             </a>
-            <h1 className="text-xl font-bold">Times Capital Wealth Management</h1>
+            <h1 className="text-xl font-bold">Vinco Wealth Management</h1>
             <div className="text-center text-sm">
               Don&apos;t have an account?{" "}
               <a href="#" className="underline underline-offset-4">
