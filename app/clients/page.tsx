@@ -8,24 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { clientProvider } from "@/lib/data-provider";
-
-// ---------- Types ----------
-// (Ideally, import this from your shared types, but keeping it here for stability)
-type Client = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  investmentManager?: string | null;
-  knowledgeExperience: string;
-  lossPct: number;
-  accountNumber: string;
-  salutation?: string | null;
-  objective: string;
-  risk: string;
-  email?: string | null;
-  phone?: string | null;
-  address?: string | null;
-};
+import { type Client } from "@/lib/database";
 
 // ---------- UI Components ----------
 function RiskBadge({ risk }: { risk: string }) {

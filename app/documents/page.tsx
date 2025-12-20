@@ -1,18 +1,19 @@
-'use client';
+"use client";
 
 import React, { useEffect, useState } from 'react';
 import { BaseDirectory, readDir, remove, stat } from '@tauri-apps/plugin-fs';
 import DocumentList from './document-list';
 import { isTauri } from '@/lib/tauri';
-// Import the native dialog helper
 import { confirmDialog } from '@/lib/file-utils';
+import { Card } from "@/components/ui/card";
+import { FileText, FolderOpen } from "lucide-react";
 
 type FileData = {
     name: string;
     created: string;
 };
 
-export default function Page() {
+export default function DocumentsPage() {
     const [files, setFiles] = useState<FileData[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -70,8 +71,6 @@ export default function Page() {
     }, []);
 
     const handleDelete = async (fileName: string) => {
-        // [!IMPORTANT] We must 'await' the result.
-        // Without 'await', the code sees the Promise object as "true" and deletes immediately.
         const confirmed = await confirmDialog(
             'Delete Document',
             `Are you sure you want to delete ${fileName}?`
@@ -83,8 +82,6 @@ export default function Page() {
             await remove(`Suitability/${fileName}`, {
                 baseDir: BaseDirectory.Document
             });
-
-            // Refresh list
             loadFiles();
         } catch (error) {
             console.error("Failed to delete file:", error);
@@ -92,16 +89,47 @@ export default function Page() {
     };
 
     return (
-        <div className="min-h-screen bg-white p-8 md:p-12">
-            <div className="max-w-3xl mx-auto mb-8">
-                <h1 className="text-2xl font-semibold tracking-tight">Suitability Files</h1>
-                <p className="text-gray-500 mt-1 text-sm">Manage your generated suitability reports.</p>
+        <div className="space-y-8 p-4 md:p-8 max-w-7xl mx-auto">
+            {/* Header with Unified Accent Style */}
+            <div className="flex items-start gap-4 border-b pb-6 border-border/40">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-sm">
+                    <FileText className="h-6 w-6" />
+                </div>
+                <div className="space-y-1">
+                    {/* text-foreground ensures this is white in dark mode */}
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                        Suitability Files
+                    </h1>
+                    <p className="text-muted-foreground text-sm md:text-base">
+                        Manage your generated suitability reports and documents.
+                    </p>
+                </div>
             </div>
 
+            {/* Content Area */}
             {loading ? (
-                <div className="max-w-3xl mx-auto text-sm text-gray-500">Loading documents...</div>
+                <div className="space-y-4">
+                    {/* Skeleton Loaders */}
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="h-20 w-full rounded-xl bg-muted/40 animate-pulse" />
+                    ))}
+                </div>
+            ) : files.length === 0 ? (
+                /* Empty State with Complementary Colors */
+                <Card className="flex flex-col items-center justify-center py-16 text-center border-dashed border-2 bg-muted/5 rounded-2xl">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary mb-4 shadow-sm">
+                        <FolderOpen className="h-8 w-8" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-foreground">No documents found</h3>
+                    <p className="text-muted-foreground mt-2 max-w-sm">
+                        Generate a report in the Suitability tab to see it here.
+                    </p>
+                </Card>
             ) : (
-                <DocumentList files={files} onDelete={handleDelete} />
+                /* Document List Container */
+                <Card className="rounded-2xl border shadow-sm bg-card overflow-hidden transition-all hover:shadow-md">
+                    <DocumentList files={files} onDelete={handleDelete} />
+                </Card>
             )}
         </div>
     );
