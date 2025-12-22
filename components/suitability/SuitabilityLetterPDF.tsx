@@ -172,7 +172,7 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 </Text>
 
                 <Text style={styles.section}>
-                    Vinco Wealth Management has recommended you {recommendation.toLowerCase()} the above equity.
+                    Vinco Wealth Management has recommended you <Text style={{ fontWeight: "bold"}}>{recommendation.toLowerCase()}</Text> the above shares.
                     Below summarises how the recommendation is suited to your individual circumstances.
                 </Text>
 
@@ -181,16 +181,16 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 </Text>
                 <Text style={styles.section}>
                     Your objective is to seek returns in the form of both income and capital appreciation ({form.objective}).
-                    Your tolerance to risk is deemed {form.risk.toLowerCase()} and your capacity for loss is {form.capacityOfLoss} of the total portfolio.
+                    Your tolerance to risk is deemed <Text style={{ fontWeight: "bold"}}>{form.risk.toLowerCase()}</Text> and your capacity for loss is <Text style={{ fontWeight: "bold"}}>{form.capacityOfLoss}</Text> of the total portfolio.
                 </Text>
 
                 <View>
                     {form.trades.map((t, i) => (
                         <View key={i}>
-                            <Text style={styles.section}>{t.assetName} would be classified as a {t.assetRisk.toLowerCase()} risk investment
+                            <Text style={styles.section}>{t.assetName} would be classified as a <Text style={{ fontWeight: "bold"}}>{t.assetRisk.toLowerCase()}-risk</Text> investment
                                 and with consideration to your overall risk profile and
                                 investment objectives. We believe as part of your overall
-                                portfolio it is suitable for you to {t.side.toLowerCase()} because of the
+                                portfolio it is suitable for you to <Text style={{ fontWeight: "bold"}}>{t.side.toLowerCase()}</Text> because of the
                                 following reasons:
                             </Text>
                             {t.reasons.filter(Boolean).length ? (
