@@ -68,6 +68,7 @@ type ClientErrors = {
     investmentManager: FieldError;
     capacityOfLoss: FieldError;
     accountNumber: FieldError;
+    salutation: FieldError;
 };
 
 type TradeErrors = {
@@ -88,6 +89,7 @@ const emptyClientErrors: ClientErrors = {
     investmentManager: null,
     capacityOfLoss: null,
     accountNumber: null,
+    salutation: null,
 };
 
 const emptyTradeErrors: TradeErrors = {
@@ -121,6 +123,9 @@ function validateClient(form: SuitabilityFormState): ClientErrors {
         errors.accountNumber = "Account number is required";
     }
 
+    if (!form.salutation.trim()) {
+        errors.salutation = "Salutation is required";
+    }
     return errors;
 }
 
@@ -449,11 +454,12 @@ export function SuitabilityWorkspace() {
                     <div className="space-y-1.5">
                         <Label>Salutation</Label>
                         <Input
-                            className="bg-input"
+                            className={`bg-input ${showErrors && errors.client.salutation ? "border-red-500" : ""}`}
                             value={form.salutation}
                             onChange={(e) => setForm((s) => ({ ...s, salutation: e.target.value }))}
-                            placeholder="Mr / Ms / Dr"
+                            placeholder="e.g. John"
                         />
+                        {showErrors && <FieldError error={errors.client.salutation} />}
                     </div>
 
                     <div className="space-y-1.5">

@@ -168,7 +168,7 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 </View>
 
                 <Text style={styles.section}>
-                    Dear {form.clientName},
+                    Dear {form.salutation},
                 </Text>
 
                 <Text style={styles.section}>
