@@ -172,7 +172,7 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 </Text>
 
                 <Text style={styles.section}>
-                    Vinco Wealth Management has recommended you {recommendation} the above equity.
+                    Vinco Wealth Management has recommended you {recommendation.toLowerCase()} the above equity.
                     Below summarises how the recommendation is suited to your individual circumstances.
                 </Text>
 
@@ -180,17 +180,17 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                     Your Investment Objectives and Risk Tolerance
                 </Text>
                 <Text style={styles.section}>
-                    Your objective is to seek returns in the form of both income and capital appreciation {form.objective}.
-                    Your tolerance to risk is deemed {form.risk} and your capacity for loss is {form.capacityOfLoss} of the total portfolio.
+                    Your objective is to seek returns in the form of both income and capital appreciation ({form.objective}).
+                    Your tolerance to risk is deemed {form.risk.toLowerCase()} and your capacity for loss is {form.capacityOfLoss} of the total portfolio.
                 </Text>
 
                 <View>
                     {form.trades.map((t, i) => (
                         <View key={i}>
-                            <Text style={styles.section}>{t.assetName} would be classified as a {t.assetRisk} investment
+                            <Text style={styles.section}>{t.assetName} would be classified as a {t.assetRisk.toLowerCase()} risk investment
                                 and with consideration to your overall risk profile and
                                 investment objectives. We believe as part of your overall
-                                portfolio it is suitable for you to {t.side} because of the
+                                portfolio it is suitable for you to {t.side.toLowerCase()} because of the
                                 following reasons:
                             </Text>
                             {t.reasons.filter(Boolean).length ? (
