@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
         padding: 10,
         paddingTop: 45,
         paddingBottom: 60,
-        backgroundColor: '#E4E4E4',
+        backgroundColor: '#ffffff',
         fontFamily: 'Carlito',
     },
     logo:{
