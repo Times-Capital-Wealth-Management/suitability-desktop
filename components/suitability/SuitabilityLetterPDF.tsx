@@ -66,17 +66,19 @@ const styles = StyleSheet.create({
         borderColor: '#2c6da1',
     },
     tableColHeader: {
-        borderStyle: "solid",
+       borderStyle: "solid",
         borderColor: "#2c6da1",
         backgroundColor: "#2c6da1",
         padding: 6,
+        borderWidth: 1,
     },
     tableCol: {
         borderStyle: "solid",
         backgroundColor: "#6eb2c6",
         padding: 6,
         borderColor: "#2c6da1",
-        borderBottomColor: "#2c6da1",
+        borderWidth:  1,
+        borderBottomWidth: 0,
     },
     headerText: {
         fontFamily: "Carlito",
@@ -138,13 +140,13 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 <View style={[styles.table]}>
                     {/* Header row */}
                     <View style={styles.tableRow}>
-                        <View style={[styles.tableColHeader, {width: "63%"}]}>
+                        <View style={[styles.tableColHeader, {width: "63%"}, {borderRightWidth: 0}]}>
                             <Text style={[styles.headerText]}>Shares</Text>
                         </View>
-                        <View style={[styles.tableColHeader, {width: "25%"}]}>
+                        <View style={[styles.tableColHeader, {width: "25%"}, {borderLeftWidth: 0}, {borderRightWidth: 0}]}>
                             <Text style={[styles.headerText]}>{quantityOrAmount}</Text>
                         </View>
-                        <View style={[styles.tableColHeader, {width: "12%"}]}>
+                        <View style={[styles.tableColHeader, {width: "12%"}, {borderLeftWidth: 0}]}>
                             <Text style={[styles.headerText]}>Account</Text>
                         </View>
                     </View>
@@ -153,13 +155,13 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                     {form.trades.map((t, i) => (
                         <View key={i}>
                             <View style={styles.tableRow}>
-                                <View style={[styles.tableCol, {width: "63%"}]}>
+                                <View style={[styles.tableCol, {width: "63%"}, {borderLeftWidth: 0}]}>
                                     <Text style={[styles.cellText]}>{t.assetName}</Text>
                                 </View>
-                                <View style={[styles.tableCol, {width: "25%"}]}>
+                                <View style={[styles.tableCol, {width: "25%"}, {borderLeftWidth: 0}]}>
                                     <Text style={[styles.cellText]}>{t.quantity}</Text>
                                 </View>
-                                <View style={[styles.tableCol, {width: "12%"}]}>
+                                <View style={[styles.tableCol, {width: "12%"}, {borderLeftWidth: 0}, {borderRightWidth: 0}]}>
                                     <Text style={[styles.cellText]}>{t.accountType}</Text>
                                 </View>
                             </View>
