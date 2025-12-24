@@ -407,7 +407,6 @@ export function SuitabilityWorkspace() {
                             className={`bg-input ${showErrors && errors.client.investmentManager ? "border-red-500" : ""}`}
                             value={form.investmentManager}
                             onChange={(e) => setForm((s) => ({ ...s, investmentManager: e.target.value }))}
-                            placeholder="e.g. Amelia Shaw"
                         />
                         {showErrors && <FieldError error={errors.client.investmentManager} />}
                     </div>
@@ -435,7 +434,6 @@ export function SuitabilityWorkspace() {
                             className={`bg-input ${showErrors && errors.client.capacityOfLoss ? "border-red-500" : ""}`}
                             value={form.capacityOfLoss}
                             onChange={(e) => setForm((s) => ({ ...s, capacityOfLoss: e.target.value }))}
-                            placeholder="e.g. 10%"
                         />
                         {showErrors && <FieldError error={errors.client.capacityOfLoss} />}
                     </div>
@@ -446,7 +444,6 @@ export function SuitabilityWorkspace() {
                             className={`bg-input ${showErrors && errors.client.accountNumber ? "border-red-500" : ""}`}
                             value={form.accountNumber}
                             onChange={(e) => setForm((s) => ({ ...s, accountNumber: e.target.value }))}
-                            placeholder="AC-123456"
                         />
                         {showErrors && <FieldError error={errors.client.accountNumber} />}
                     </div>
@@ -457,7 +454,6 @@ export function SuitabilityWorkspace() {
                             className={`bg-input ${showErrors && errors.client.salutation ? "border-red-500" : ""}`}
                             value={form.salutation}
                             onChange={(e) => setForm((s) => ({ ...s, salutation: e.target.value }))}
-                            placeholder="e.g. John"
                         />
                         {showErrors && <FieldError error={errors.client.salutation} />}
                     </div>
@@ -544,7 +540,6 @@ export function SuitabilityWorkspace() {
                                                     assetName: e.target.value,
                                                 }))
                                             }
-                                            placeholder="e.g. Apple Inc."
                                         />
                                         {showErrors && <FieldError error={errors.trades[abs]?.assetName} />}
                                     </div>
@@ -666,7 +661,6 @@ export function SuitabilityWorkspace() {
                                                     quantity: e.target.value,
                                                 }))
                                             }
-                                            placeholder="e.g. 100"
                                         />
                                         {showErrors && <FieldError error={errors.trades[abs]?.quantity} />}
                                     </div>
@@ -682,7 +676,6 @@ export function SuitabilityWorkspace() {
                                                     dateOfTrade: e.target.value,
                                                 }))
                                             }
-                                            placeholder="e.g. 10/09/2025"
                                         />
                                         {showErrors && <FieldError error={errors.trades[abs]?.dateOfTrade} />}
                                     </div>
@@ -698,7 +691,6 @@ export function SuitabilityWorkspace() {
                                                     timeOfTrade: e.target.value,
                                                 }))
                                             }
-                                            placeholder="e.g. 10:30"
                                         />
                                         {showErrors && <FieldError error={errors.trades[abs]?.timeOfTrade} />}
                                     </div>
