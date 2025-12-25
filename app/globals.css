@@ -3,6 +3,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Making the placeholders italic */
+input::placeholder{
+  font-style: italic;
+}
+textarea::placeholder{
+  font-style: italic;
+}
+
 /* Modern Navy Blue Theme - Light Mode */
 :root {
   /* Base colors - Clean, professional light theme */
