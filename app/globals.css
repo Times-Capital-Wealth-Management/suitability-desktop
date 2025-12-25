@@ -18,9 +18,9 @@ textarea::placeholder{
   --foreground: oklch(0.205 0.025 255);
 
   /* Cards - Subtle gradient-ready surfaces */
-  --card: oklch(1 0 0);
+  --card: oklch(1 0 89.876);
   --card-foreground: oklch(0.205 0.025 255);
-  --cardClient: oklch(0.97 0.015 250);
+  --cardClient: oklch(0.825 0.079 251.082);
   --cardClient-foreground: oklch(0.205 0.025 255);
 
   /* Popover */
@@ -47,7 +47,7 @@ textarea::placeholder{
   --destructive: oklch(0.55 0.22 25);
 
   /* Borders & inputs */
-  --border: oklch(0.90 0.01 250);
+  --border: oklch(0.988 0 89.876);
   --input: oklch(0.98 0.003 250);
   --ring: oklch(0.50 0.14 255);
 
