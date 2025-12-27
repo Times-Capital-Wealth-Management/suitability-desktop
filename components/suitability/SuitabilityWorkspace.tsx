@@ -842,7 +842,7 @@ export function SuitabilityWorkspace() {
             <Card className="lg:col-span-2 rounded-2xl border p-4">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="text-sm text-muted-foreground">
-                        Ready to generate a suitability letter or save a draft?
+                        Ready to preview or generate a suitability letter?
                     </div>
                     <div className="flex gap-3">
                         <LetterPreviewSheet form={form} />

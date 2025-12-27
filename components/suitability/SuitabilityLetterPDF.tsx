@@ -403,7 +403,7 @@ export default function SuitabilityLetterPDF({ form, onBeforeSave }: Suitability
                     Generating...
                 </>
             ) : (
-                "Save Letter"
+                "Generate Letter"
             )}
         </span>
     );
