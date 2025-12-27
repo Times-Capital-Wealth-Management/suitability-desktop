@@ -31,6 +31,12 @@ import { ClientSelector } from "@/components/client-selector";
 import { cn } from "@/lib/utils";
 import { clientProvider } from "@/lib/data-provider";
 import { type Client } from "@/lib/database";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronsUpDown} from "lucide-react";
 
 /* -------------------- Types -------------------- */
 
@@ -236,6 +242,8 @@ export function SuitabilityWorkspace() {
 
     const SuitabilityLetterPDF = dynamic(() => import("@/components/suitability/SuitabilityLetterPDF"), { ssr: false });
 
+    const [isOpen, setIsOpen] = React.useState(false);
+
     /* --------- pagination (locked to 1 per page) --------- */
     const pageSize = 1 as const;
     const [page, setPage] = useState(1);
@@ -383,12 +391,21 @@ export function SuitabilityWorkspace() {
     return (
         <div className="flex-col space-y-2">
             {/* LEFT — Client */}
-            <CardClient className="rounded-2xl border p-6 space-y-4">
-                <h3 className="text-base font-medium">Client</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <CardClient className="rounded-2xl border p-6 space-y-4 relative">
+                <Collapsible open={isOpen}
+                             onOpenChange={setIsOpen}
+                              className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <h1 className="text-base font-medium col-span-2">Client</h1>
+
+                    <CollapsibleTrigger asChild>
+                        <Button variant="ghost" size="icon" className="size-8 absolute right-3 top-4 pt-1">
+                            <ChevronsUpDown />
+                            <span className="sr-only">Toggle</span>
+                        </Button>
+                    </CollapsibleTrigger>
 
                     {/* New Client Selector */}
-                    <div className="space-y-1.5 relative">
+                    <div className="space-y-1.5 ">
                         <Label>Client</Label>
                         <ClientSelector
                             clients={clients}
@@ -402,6 +419,39 @@ export function SuitabilityWorkspace() {
                     </div>
 
                     <div className="space-y-1.5">
+                        <Label>Salutation</Label>
+                        <Input
+                            className={`bg-input ${showErrors && errors.client.salutation ? "border-red-500" : ""}`}
+                            value={form.salutation}
+                            onChange={(e) => setForm((s) => ({ ...s, salutation: e.target.value }))}
+                            placeholder={`e.g. Jane`}
+                        />
+                        {showErrors && <FieldError error={errors.client.salutation} />}
+                    </div>
+                    
+                    <CollapsibleContent className="space-y-1.5">
+                        <Label>Account Number</Label>
+                        <Input
+                            className={`bg-input ${showErrors && errors.client.accountNumber ? "border-red-500" : ""}`}
+                            value={form.accountNumber}
+                            onChange={(e) => setForm((s) => ({ ...s, accountNumber: e.target.value }))}
+                            placeholder={`e.g. SCC123456`}
+                        />
+                        {showErrors && <FieldError error={errors.client.accountNumber} />}
+                    </CollapsibleContent>
+
+                    <CollapsibleContent className="space-y-1.5">
+                        <Label>Capacity of Loss</Label>
+                        <Input
+                            className={`bg-input ${showErrors && errors.client.capacityOfLoss ? "border-red-500" : ""}`}
+                            value={form.capacityOfLoss}
+                            onChange={(e) => setForm((s) => ({ ...s, capacityOfLoss: e.target.value }))}
+                            placeholder={`e.g. 50%`}
+                        />
+                        {showErrors && <FieldError error={errors.client.capacityOfLoss} />}
+                    </CollapsibleContent>
+
+                    <CollapsibleContent className="space-y-1.5">
                         <Label>Investment Manager</Label>
                         <Input
                             className={`bg-input ${showErrors && errors.client.investmentManager ? "border-red-500" : ""}`}
@@ -410,9 +460,9 @@ export function SuitabilityWorkspace() {
                             placeholder={`e.g. John Smith`}
                         />
                         {showErrors && <FieldError error={errors.client.investmentManager} />}
-                    </div>
+                    </CollapsibleContent>
 
-                    <div className="space-y-1.5">
+                    <CollapsibleContent className="space-y-1.5">
                         <Label>Knowledge / Experience</Label>
                         <Select
                             value={form.knowledgeExperience}
@@ -427,42 +477,9 @@ export function SuitabilityWorkspace() {
                                 <SelectItem value="High">High</SelectItem>
                             </SelectContent>
                         </Select>
-                    </div>
+                    </CollapsibleContent>
 
-                    <div className="space-y-1.5">
-                        <Label>Capacity of Loss</Label>
-                        <Input
-                            className={`bg-input ${showErrors && errors.client.capacityOfLoss ? "border-red-500" : ""}`}
-                            value={form.capacityOfLoss}
-                            onChange={(e) => setForm((s) => ({ ...s, capacityOfLoss: e.target.value }))}
-                            placeholder={`e.g. 50%`}
-                        />
-                        {showErrors && <FieldError error={errors.client.capacityOfLoss} />}
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label>Account Number</Label>
-                        <Input
-                            className={`bg-input ${showErrors && errors.client.accountNumber ? "border-red-500" : ""}`}
-                            value={form.accountNumber}
-                            onChange={(e) => setForm((s) => ({ ...s, accountNumber: e.target.value }))}
-                            placeholder={`e.g. SCC123456`}
-                        />
-                        {showErrors && <FieldError error={errors.client.accountNumber} />}
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label>Salutation</Label>
-                        <Input
-                            className={`bg-input ${showErrors && errors.client.salutation ? "border-red-500" : ""}`}
-                            value={form.salutation}
-                            onChange={(e) => setForm((s) => ({ ...s, salutation: e.target.value }))}
-                            placeholder={`e.g. Jane`}
-                        />
-                        {showErrors && <FieldError error={errors.client.salutation} />}
-                    </div>
-
-                    <div className="space-y-1.5">
+                    <CollapsibleContent className="space-y-1.5">
                         <Label>Objective</Label>
                         <Select value={form.objective} onValueChange={(v: any) => setForm((s) => ({ ...s, objective: v }))}>
                             <SelectTrigger className="bg-input">
@@ -474,9 +491,9 @@ export function SuitabilityWorkspace() {
                                 <SelectItem value="Income">Income</SelectItem>
                             </SelectContent>
                         </Select>
-                    </div>
+                    </CollapsibleContent>
 
-                    <div className="space-y-1.5">
+                    <CollapsibleContent className="space-y-1.5">
                         <Label>Risk</Label>
                         <Select value={form.risk} onValueChange={(v: any) => setForm((s) => ({ ...s, risk: v }))}>
                             <SelectTrigger
@@ -495,8 +512,8 @@ export function SuitabilityWorkspace() {
                                 <SelectItem value="High">High</SelectItem>
                             </SelectContent>
                         </Select>
-                    </div>
-                </div>
+                    </CollapsibleContent>
+                </Collapsible>
             </CardClient>
 
             {/* RIGHT — Proposed Transactions (1 per page) */}
@@ -825,7 +842,7 @@ export function SuitabilityWorkspace() {
             <Card className="lg:col-span-2 rounded-2xl border p-4">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="text-sm text-muted-foreground">
-                        Ready to generate a suitability letter or save a draft?
+                        Ready to preview or generate a suitability letter?
                     </div>
                     <div className="flex gap-3">
                         <LetterPreviewSheet form={form} />
