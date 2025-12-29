@@ -144,8 +144,10 @@ function validateTrade(trade: Trade): TradeErrors {
 
     if (!trade.quantity.trim()) {
         errors.quantity = "Quantity/Amount is required";
-    } else if (!/^(([\d,]+(\.\d+)?)|Sell All)$/.test(trade.quantity.trim().replace(/[£$€]/g, ""))) {
-        errors.quantity = "Must be a valid number or Sell All";
+    }else if (trade.side === "Sell" && /^Sell All$/i.test(trade.quantity.trim().replace(/[£$€]/g, ""))){
+    //if it sees the trade as a sell and quantity is Sell All, allow it through
+    } else if (!/^([\d,]+(\.\d+)?)$/.test(trade.quantity.trim().replace(/[£$€]/g, ""))) {
+        errors.quantity = trade.side === "Sell" ? "Must be a valid number or 'Sell All'" : "Must be a valid number";
     }
 
     if (!trade.dateOfTrade.trim()) {
