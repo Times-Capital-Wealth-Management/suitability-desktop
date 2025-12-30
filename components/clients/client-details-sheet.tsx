@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import {User, Mail, Home, Hash, Phone, Handshake, CalendarClock, BadgePercent} from "lucide-react";
+import {User, Mail, Home, Hash, Phone, CalendarClock, BadgePercent, Scale} from "lucide-react";
 import { useClient } from "@/hooks/use-tauri";
 
 type Client = {
@@ -126,7 +126,7 @@ export default function ClientDetailsSheet({
 
                 {/* Power of Attorney */}
                 <div className="flex items-center gap-3 px-4 py-3">
-                  <Handshake className="h-4 w-4 text-muted-foreground" />
+                  <Scale className="h-4 w-4 text-muted-foreground" />
                   <div>
                     <dt className="text-xs uppercase text-muted-foreground">
                       Power of Attorney
