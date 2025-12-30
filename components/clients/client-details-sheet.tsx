@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { User, Mail, Home, Hash, Phone } from "lucide-react";
+import {User, Mail, Home, Hash, Phone, Handshake, CalendarClock, BadgePercent} from "lucide-react";
 import { useClient } from "@/hooks/use-tauri";
 
 type Client = {
@@ -52,6 +52,7 @@ export default function ClientDetailsSheet({
             <Skeleton className="h-4 w-2/3" />
             <Skeleton className="h-4 w-3/4" />
             <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-1/2" />
           </div>
         ) : client ? (
           <div className="mx-auto w-full max-w-md p-4">
@@ -84,7 +85,7 @@ export default function ClientDetailsSheet({
                 </div>
 
                 {/* Email */}
-                <div className="flex items-center gap-3 px-4 py-3">
+                <div className="flex items-center gap-3 px-4 py-3 bg-muted/30">
                   <Mail className="h-4 w-4 text-muted-foreground" />
                   <div>
                     <dt className="text-xs uppercase text-muted-foreground">
@@ -97,7 +98,7 @@ export default function ClientDetailsSheet({
                 </div>
 
                 {/* Address */}
-                <div className="flex items-center gap-3 px-4 py-3 bg-muted/30">
+                <div className="flex items-center gap-3 px-4 py-3">
                   <Home className="h-4 w-4 text-muted-foreground" />
                   <div>
                     <dt className="text-xs uppercase text-muted-foreground">
@@ -110,7 +111,7 @@ export default function ClientDetailsSheet({
                 </div>
 
                 {/* Account Number */}
-                <div className="flex items-center gap-3 px-4 py-3">
+                <div className="flex items-center gap-3 px-4 py-3 bg-muted/30">
                   <Hash className="h-4 w-4 text-muted-foreground" />
                   <div>
                     <dt className="text-xs uppercase text-muted-foreground">
@@ -121,6 +122,47 @@ export default function ClientDetailsSheet({
                     </dd>
                   </div>
                 </div>
+
+
+                {/* Power of Attorney */}
+                <div className="flex items-center gap-3 px-4 py-3">
+                  <Handshake className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <dt className="text-xs uppercase text-muted-foreground">
+                      Power of Attorney
+                    </dt>
+                    <dd className="text-sm font-medium">
+                      Data Not Yet Implemented
+                    </dd>
+                  </div>
+                </div>
+
+                {/* Annual Review Date */}
+                <div className="flex items-center gap-3 px-4 py-3 bg-muted/30">
+                  <CalendarClock className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <dt className="text-xs uppercase text-muted-foreground">
+                      Annual Review Date
+                    </dt>
+                    <dd className="text-sm font-medium">
+                      Data Not Yet Implemented
+                    </dd>
+                  </div>
+                </div>
+
+                {/* Fees/Commission Rate */}
+                <div className="flex items-center gap-3 px-4 py-3">
+                  <BadgePercent className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <dt className="text-xs uppercase text-muted-foreground">
+                      Fees/Commission Rate
+                    </dt>
+                    <dd className="text-sm font-medium">
+                      Data Not Yet Implemented
+                    </dd>
+                  </div>
+                </div>
+
               </dl>
             </div>
 
