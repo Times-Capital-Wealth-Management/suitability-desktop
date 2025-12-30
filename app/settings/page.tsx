@@ -50,6 +50,7 @@ export default function SettingsPage() {
           knowledgeExperience: row.knowledgeExperience || "Low",
           lossPct: row.lossPct || 0,
           accountNumber: row.accountNumber || `UNK-${i}`,
+          typeAccount: row.typeAccount,
           salutation: row.salutation || null,
           objective: row.objective || "Balanced",
           risk: row.risk || "Medium",

@@ -10,6 +10,7 @@ export type Client = {
   knowledgeExperience: string;
   lossPct: number;
   accountNumber: string;
+  typeAccount: string;
   salutation?: string | null;
   objective: string;
   risk: string;
@@ -29,6 +30,7 @@ type ClientRow = {
   knowledge_experience: string;
   loss_pct: number;
   account_number: string;
+  type_account: string;
   salutation: string | null;
   objective: string;
   risk: string;
@@ -47,6 +49,7 @@ function rowToClient(row: ClientRow): Client {
     knowledgeExperience: row.knowledge_experience,
     lossPct: row.loss_pct,
     accountNumber: row.account_number,
+    typeAccount: row.type_account,
     salutation: row.salutation,
     objective: row.objective,
     risk: row.risk,
@@ -116,8 +119,8 @@ export const clientDb = {
     await database.execute(
         `INSERT INTO clients (
         id, first_name, last_name, investment_manager, knowledge_experience,
-        loss_pct, account_number, salutation, objective, risk, email, phone, address
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        loss_pct, account_number, type_account, salutation, objective, risk, email, phone, address
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           id,
           client.firstName,
@@ -126,6 +129,7 @@ export const clientDb = {
           client.knowledgeExperience,
           client.lossPct,
           client.accountNumber,
+          client.typeAccount,
           client.salutation || null,
           client.objective,
           client.risk,
@@ -169,6 +173,10 @@ export const clientDb = {
       fields.push("account_number = ?");
       values.push(client.accountNumber);
     }
+      if (client.typeAccount !== undefined) {
+          fields.push("type_account = ?");
+          values.push(client.typeAccount);
+      }
     if (client.salutation !== undefined) {
       fields.push("salutation = ?");
       values.push(client.salutation);
@@ -236,8 +244,8 @@ export const clientDb = {
       await database.execute(
           `INSERT INTO clients (
           id, first_name, last_name, investment_manager, knowledge_experience,
-          loss_pct, account_number, salutation, objective, risk, email, phone, address
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          loss_pct, account_number, type_account, salutation, objective, risk, email, phone, address
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             client.id,
             client.firstName,
@@ -246,6 +254,7 @@ export const clientDb = {
             client.knowledgeExperience,
             client.lossPct,
             client.accountNumber,
+            client.typeAccount,
             client.salutation || null,
             client.objective,
             client.risk,
@@ -271,8 +280,8 @@ export const clientDb = {
       await database.execute(
           `INSERT INTO clients (
           id, first_name, last_name, investment_manager, knowledge_experience,
-          loss_pct, account_number, salutation, objective, risk, email, phone, address
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          loss_pct, account_number, type_account, salutation, objective, risk, email, phone, address
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             client.id,
             client.firstName,
@@ -281,6 +290,7 @@ export const clientDb = {
             client.knowledgeExperience,
             client.lossPct,
             client.accountNumber,
+            client.typeAccount,
             client.salutation || null,
             client.objective,
             client.risk,

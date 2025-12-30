@@ -177,7 +177,7 @@ export default function ClientsPage() {
                             <td className="px-4 py-3 font-medium">{c.firstName}</td>
                             <td className="px-4 py-3 font-medium">{c.lastName}</td>
                             <td className="px-4 py-3 text-muted-foreground font-mono text-xs">{c.accountNumber}</td>
-                            <td className="px-4 py-3 text-muted-foreground font-mono text-xs"></td>
+                            <td className="px-4 py-3 text-muted-foreground">{c.typeAccount}</td>
                             <td className="px-4 py-3">{c.investmentManager ?? "—"}</td>
                             <td className="px-4 py-3">{c.lossPct}%</td>
                             <td className="px-4 py-3">

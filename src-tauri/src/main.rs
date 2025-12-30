@@ -16,6 +16,7 @@ pub struct Client {
     pub knowledge_experience: String,
     pub loss_pct: i32,
     pub account_number: String,
+    pub type_account: String,
     pub salutation: Option<String>,
     pub objective: String,
     pub risk: String,
@@ -115,6 +116,14 @@ fn main() {
             "#,
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 4,
+            description: "add_account_type_to_clients",
+            sql: r#"
+            ALTER TABLE clients ADD COLUMN type_account TEXT;
+            "#,
+            kind: MigrationKind::Up,
+        }
     ];
 
     tauri::Builder::default()
