@@ -695,12 +695,24 @@ export function SuitabilityWorkspace() {
                                         <Input
                                             className={`bg-input ${showErrors && errors.trades[abs]?.dateOfTrade ? "border-red-500" : ""}`}
                                             value={t.dateOfTrade}
-                                            onChange={(e) =>
+                                            onChange={(e) =>{
+                                                let v = e.target.value;
+
+                                                // allow digits and slashes
+                                                v = v.replace(/[^\d/]/g, "");
+
+                                                // prevent multiple slashes
+                                                v = v.replace(/\/+/g, "/");
+
+                                                // auto insert slashes
+                                                if (v.length === 2 && !v.includes("/")) v += "/";
+                                                if (v.length === 5 && v.split("/").length === 2) v += "/";
+
                                                 updateTrade(abs, (old) => ({
                                                     ...old,
-                                                    dateOfTrade: e.target.value,
+                                                    dateOfTrade: v,
                                                 }))
-                                            }
+                                            }}
                                             placeholder={`DD/MM/YYYY`}
                                         />
                                         {showErrors && <FieldError error={errors.trades[abs]?.dateOfTrade} />}
