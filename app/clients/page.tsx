@@ -147,6 +147,7 @@ export default function ClientsPage() {
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">First Name</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">Last Name</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">Account</th>
+                        <th className="px-4 py-3 text-left font-medium text-muted-foreground">Account Type</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">Manager</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">% Loss</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">Objective</th>
@@ -176,6 +177,7 @@ export default function ClientsPage() {
                             <td className="px-4 py-3 font-medium">{c.firstName}</td>
                             <td className="px-4 py-3 font-medium">{c.lastName}</td>
                             <td className="px-4 py-3 text-muted-foreground font-mono text-xs">{c.accountNumber}</td>
+                            <td className="px-4 py-3 text-muted-foreground font-mono text-xs"></td>
                             <td className="px-4 py-3">{c.investmentManager ?? "—"}</td>
                             <td className="px-4 py-3">{c.lossPct}%</td>
                             <td className="px-4 py-3">
