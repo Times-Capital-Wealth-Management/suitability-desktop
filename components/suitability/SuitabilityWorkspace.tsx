@@ -733,12 +733,30 @@ export function SuitabilityWorkspace() {
                                         <Input
                                             className={`bg-input ${showErrors && errors.trades[abs]?.timeOfTrade ? "border-red-500" : ""}`}
                                             value={t.timeOfTrade}
-                                            onChange={(e) =>
+                                            onChange={(e) =>{
+                                                let v = e.target.value;
+
+                                                v = v.replace(/[^\d:]/g, "");
+
+                                                v = v.replace(/:+/g, ":");
+
+                                                const deleting = v.length < (t.timeOfTrade || " ").length;
+                                                if(deleting){
+                                                    updateTrade(abs, (old) => ({
+                                                        ...old,
+                                                        timeOfTrade: v,
+                                                        })
+                                                    )
+                                                    return;
+                                                }
+
+                                                if(v.length === 2 && !v.includes(":")) v += ":"
+
                                                 updateTrade(abs, (old) => ({
                                                     ...old,
-                                                    timeOfTrade: e.target.value,
+                                                    timeOfTrade: v,
                                                 }))
-                                            }
+                                            }}
                                             placeholder={`HH:MM`}
                                         />
                                         {showErrors && <FieldError error={errors.trades[abs]?.timeOfTrade} />}
