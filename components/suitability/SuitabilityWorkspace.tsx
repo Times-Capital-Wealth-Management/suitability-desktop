@@ -704,6 +704,16 @@ export function SuitabilityWorkspace() {
                                                 // prevent multiple slashes
                                                 v = v.replace(/\/+/g, "/");
 
+                                                //deleting the auto slash when pressing backspace
+                                                const deleting = v.length < (t.dateOfTrade || " ").length;
+                                                if(deleting) {
+                                                    updateTrade(abs, (old) => ({
+                                                        ...old,
+                                                        dateOfTrade: v,
+                                                    }))
+                                                    return;
+                                                }
+
                                                 // auto insert slashes
                                                 if (v.length === 2 && !v.includes("/")) v += "/";
                                                 if (v.length === 5 && v.split("/").length === 2) v += "/";
