@@ -18,8 +18,8 @@ export type Client = {
   phone?: string | null;
   address?: string | null;
   powerOfAttorney?: string | null;
-  annualReviewDate: string;
-  feesCommissionRate: string;
+  annualReviewDate: string | null;
+  feesCommissionRate: string | null;
 };
 
 export type ClientList = { items: Client[]; total: number };
@@ -41,8 +41,8 @@ type ClientRow = {
   phone: string | null;
   address: string | null;
   power_of_attorney?: string | null;
-  annual_review_date: string;
-  fees_commission_rate: string;
+  annual_review_date: string | null;
+  fees_commission_rate: string | null;
 };
 
 // Convert database row to Client type
@@ -147,8 +147,8 @@ export const clientDb = {
           client.phone || null,
           client.address || null,
           client.powerOfAttorney || null,
-          client.annualReviewDate,
-          client.feesCommissionRate,
+          client.annualReviewDate || null,
+          client.feesCommissionRate || null,
         ]
     );
 
@@ -288,8 +288,8 @@ export const clientDb = {
             client.phone || null,
             client.address || null,
             client.powerOfAttorney || null,
-            client.annualReviewDate,
-            client.feesCommissionRate,
+            client.annualReviewDate || null,
+            client.feesCommissionRate || null,
           ]
       );
     }
@@ -328,8 +328,8 @@ export const clientDb = {
             client.phone || null,
             client.address || null,
             client.powerOfAttorney || null,
-            client.annualReviewDate,
-            client.feesCommissionRate,
+            client.annualReviewDate || null,
+            client.feesCommissionRate || null,
           ]
       );
     }

@@ -132,8 +132,8 @@ fn main() {
             description: "add_powerOfAttorney_annualReviewDate_feesCommissionRate_types_to_clients",
             sql: r#"
             ALTER TABLE clients ADD COLUMN power_of_attorney TEXT;
-            ALTER TABLE clients ADD COLUMN annual_review_date TEXT NOT NULL DEFAULT 'N/A';
-            ALTER TABLE clients ADD COLUMN fees_commission_rate TEXT NOT NULL DEFAULT 'N/A';
+            ALTER TABLE clients ADD COLUMN annual_review_date TEXT;
+            ALTER TABLE clients ADD COLUMN fees_commission_rate TEXT;
             "#,
             kind: MigrationKind::Up,
         },

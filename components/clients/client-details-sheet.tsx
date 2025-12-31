@@ -145,7 +145,7 @@ export default function ClientDetailsSheet({
                       Annual Review Date
                     </dt>
                     <dd className="text-sm font-medium">
-                      {client.annualReviewDate}
+                      {client.annualReviewDate ?? "N/A"}
                     </dd>
                   </div>
                 </div>
@@ -158,7 +158,7 @@ export default function ClientDetailsSheet({
                       Fees/Commission Rate
                     </dt>
                     <dd className="text-sm font-medium">
-                      {client.feesCommissionRate}
+                      {client.feesCommissionRate ?? "N/A"}
                     </dd>
                   </div>
                 </div>

@@ -58,8 +58,8 @@ export default function SettingsPage() {
           phone: row.phone || null,
           address: row.address || null,
           powerOfAttorney: row.powerOfAttorney || null,
-          annualReviewDate: row.annualReviewDate,
-          feesCommissionRate: row.feesCommissionRate,
+          annualReviewDate: row.annualReviewDate || null,
+          feesCommissionRate: row.feesCommissionRate || null,
         } as Client);
       }
     }
