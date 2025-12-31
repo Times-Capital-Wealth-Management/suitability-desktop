@@ -132,7 +132,7 @@ export default function ClientDetailsSheet({
                       Power of Attorney
                     </dt>
                     <dd className="text-sm font-medium">
-                      Data Not Yet Implemented
+                      {client.powerOfAttorney ?? "N/A"}
                     </dd>
                   </div>
                 </div>
@@ -145,7 +145,7 @@ export default function ClientDetailsSheet({
                       Annual Review Date
                     </dt>
                     <dd className="text-sm font-medium">
-                      Data Not Yet Implemented
+                      {client.annualReviewDate}
                     </dd>
                   </div>
                 </div>
@@ -158,7 +158,7 @@ export default function ClientDetailsSheet({
                       Fees/Commission Rate
                     </dt>
                     <dd className="text-sm font-medium">
-                      Data Not Yet Implemented
+                      {client.feesCommissionRate}
                     </dd>
                   </div>
                 </div>

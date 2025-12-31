@@ -17,6 +17,9 @@ export type Client = {
   email?: string | null;
   phone?: string | null;
   address?: string | null;
+  powerOfAttorney?: string | null;
+  annualReviewDate: string;
+  feesCommissionRate: string;
 };
 
 export type ClientList = { items: Client[]; total: number };
@@ -37,6 +40,9 @@ type ClientRow = {
   email: string | null;
   phone: string | null;
   address: string | null;
+  power_of_attorney?: string | null;
+  annual_review_date: string;
+  fees_commission_rate: string;
 };
 
 // Convert database row to Client type
@@ -56,6 +62,9 @@ function rowToClient(row: ClientRow): Client {
     email: row.email,
     phone: row.phone,
     address: row.address,
+    powerOfAttorney: row.power_of_attorney,
+    annualReviewDate: row.annual_review_date,
+    feesCommissionRate: row.fees_commission_rate,
   };
 }
 
@@ -119,8 +128,9 @@ export const clientDb = {
     await database.execute(
         `INSERT INTO clients (
         id, first_name, last_name, investment_manager, knowledge_experience,
-        loss_pct, account_number, type_account, salutation, objective, risk, email, phone, address
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        loss_pct, account_number, type_account, salutation, objective, risk, email, phone, address, power_of_attorney, annual_review_date,
+        fees_commission_rate             
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           id,
           client.firstName,
@@ -136,6 +146,9 @@ export const clientDb = {
           client.email || null,
           client.phone || null,
           client.address || null,
+          client.powerOfAttorney || null,
+          client.annualReviewDate,
+          client.feesCommissionRate,
         ]
     );
 
@@ -201,6 +214,18 @@ export const clientDb = {
       fields.push("address = ?");
       values.push(client.address);
     }
+    if (client.powerOfAttorney !== undefined) {
+          fields.push("power_of_attorney = ?");
+          values.push(client.powerOfAttorney);
+    }
+    if (client.annualReviewDate !== undefined) {
+          fields.push("annual_review_date = ?");
+          values.push(client.annualReviewDate);
+    }
+    if (client.feesCommissionRate !== undefined) {
+          fields.push("fees_commission_rate = ?");
+          values.push(client.feesCommissionRate);
+    }
 
     if (fields.length === 0) return false;
 
@@ -244,8 +269,9 @@ export const clientDb = {
       await database.execute(
           `INSERT INTO clients (
           id, first_name, last_name, investment_manager, knowledge_experience,
-          loss_pct, account_number, type_account, salutation, objective, risk, email, phone, address
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          loss_pct, account_number, type_account, salutation, objective, risk, email, phone, address, power_of_attorney, annual_review_date,
+          fees_commission_rate
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             client.id,
             client.firstName,
@@ -261,6 +287,9 @@ export const clientDb = {
             client.email || null,
             client.phone || null,
             client.address || null,
+            client.powerOfAttorney || null,
+            client.annualReviewDate,
+            client.feesCommissionRate,
           ]
       );
     }
@@ -280,8 +309,9 @@ export const clientDb = {
       await database.execute(
           `INSERT INTO clients (
           id, first_name, last_name, investment_manager, knowledge_experience,
-          loss_pct, account_number, type_account, salutation, objective, risk, email, phone, address
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          loss_pct, account_number, type_account, salutation, objective, risk, email, phone, address, power_of_attorney, annual_review_date,
+          fees_commission_rate
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             client.id,
             client.firstName,
@@ -297,6 +327,9 @@ export const clientDb = {
             client.email || null,
             client.phone || null,
             client.address || null,
+            client.powerOfAttorney || null,
+            client.annualReviewDate,
+            client.feesCommissionRate,
           ]
       );
     }

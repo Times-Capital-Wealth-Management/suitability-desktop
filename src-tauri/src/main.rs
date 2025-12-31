@@ -23,6 +23,9 @@ pub struct Client {
     pub email: Option<String>,
     pub phone: Option<String>,
     pub address: Option<String>,
+    pub power_of_attorney: Option<String>,
+    pub annual_review_date: String,
+    pub fees_commission_rate: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -123,7 +126,17 @@ fn main() {
             ALTER TABLE clients ADD COLUMN type_account TEXT;
             "#,
             kind: MigrationKind::Up,
-        }
+        },
+        Migration {
+            version: 5,
+            description: "add_powerOfAttorney_annualReviewDate_feesCommissionRate_types_to_clients",
+            sql: r#"
+            ALTER TABLE clients ADD COLUMN power_of_attorney TEXT;
+            ALTER TABLE clients ADD COLUMN annual_review_date TEXT NOT NULL DEFAULT 'N/A';
+            ALTER TABLE clients ADD COLUMN fees_commission_rate TEXT NOT NULL DEFAULT 'N/A';
+            "#,
+            kind: MigrationKind::Up,
+        },
     ];
 
     tauri::Builder::default()

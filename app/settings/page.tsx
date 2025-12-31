@@ -57,6 +57,9 @@ export default function SettingsPage() {
           email: row.email || null,
           phone: row.phone || null,
           address: row.address || null,
+          powerOfAttorney: row.powerOfAttorney || null,
+          annualReviewDate: row.annualReviewDate,
+          feesCommissionRate: row.feesCommissionRate,
         } as Client);
       }
     }
