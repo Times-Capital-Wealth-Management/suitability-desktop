@@ -38,6 +38,7 @@ function TableSkeleton() {
               <th className="px-3 py-2 text-left">First Name</th>
               <th className="px-3 py-2 text-left">Last Name</th>
               <th className="px-3 py-2 text-left">Account Number</th>
+              <th className="px-3 py-2 text-left">Account Type</th>
               <th className="px-3 py-2 text-left">Manager</th>
               <th className="px-3 py-2 text-left">Risk</th>
             </tr>
@@ -47,6 +48,7 @@ function TableSkeleton() {
                 <tr key={i} className="border-t">
                   <td className="px-2 py-2"><Skeleton className="h-8 w-8" /></td>
                   <td className="px-3 py-2"><Skeleton className="h-4 w-20" /></td>
+                  <td className="px-3 py-2"><Skeleton className="h-4 w-24" /></td>
                   <td className="px-3 py-2"><Skeleton className="h-4 w-24" /></td>
                   <td className="px-3 py-2"><Skeleton className="h-4 w-24" /></td>
                   <td className="px-3 py-2"><Skeleton className="h-4 w-28" /></td>

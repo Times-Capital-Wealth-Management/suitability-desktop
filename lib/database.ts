@@ -112,9 +112,9 @@ export const clientDb = {
     const searchTerm = `%${query}%`;
     const rows = await database.select<ClientRow[]>(
         `SELECT * FROM clients 
-       WHERE first_name LIKE ? OR last_name LIKE ? 
+       WHERE first_name LIKE ? OR last_name LIKE ? OR account_number LIKE ?
        ORDER BY last_name, first_name`,
-        [searchTerm, searchTerm]
+        [searchTerm, searchTerm, searchTerm]
     );
     const items = rows.map(rowToClient);
     return { items, total: items.length };
