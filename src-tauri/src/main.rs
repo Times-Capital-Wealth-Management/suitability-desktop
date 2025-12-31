@@ -16,12 +16,16 @@ pub struct Client {
     pub knowledge_experience: String,
     pub loss_pct: i32,
     pub account_number: String,
+    pub type_account: String,
     pub salutation: Option<String>,
     pub objective: String,
     pub risk: String,
     pub email: Option<String>,
     pub phone: Option<String>,
     pub address: Option<String>,
+    pub power_of_attorney: Option<String>,
+    pub annual_review_date: String,
+    pub fees_commission_rate: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -112,6 +116,24 @@ fn main() {
                     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (client_id) REFERENCES clients(id)
                 );
+            "#,
+            kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 4,
+            description: "add_account_type_to_clients",
+            sql: r#"
+            ALTER TABLE clients ADD COLUMN type_account TEXT;
+            "#,
+            kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 5,
+            description: "add_powerOfAttorney_annualReviewDate_feesCommissionRate_types_to_clients",
+            sql: r#"
+            ALTER TABLE clients ADD COLUMN power_of_attorney TEXT;
+            ALTER TABLE clients ADD COLUMN annual_review_date TEXT;
+            ALTER TABLE clients ADD COLUMN fees_commission_rate TEXT;
             "#,
             kind: MigrationKind::Up,
         },

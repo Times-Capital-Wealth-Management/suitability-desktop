@@ -38,6 +38,7 @@ function TableSkeleton() {
               <th className="px-3 py-2 text-left">First Name</th>
               <th className="px-3 py-2 text-left">Last Name</th>
               <th className="px-3 py-2 text-left">Account Number</th>
+              <th className="px-3 py-2 text-left">Account Type</th>
               <th className="px-3 py-2 text-left">Manager</th>
               <th className="px-3 py-2 text-left">Risk</th>
             </tr>
@@ -47,6 +48,7 @@ function TableSkeleton() {
                 <tr key={i} className="border-t">
                   <td className="px-2 py-2"><Skeleton className="h-8 w-8" /></td>
                   <td className="px-3 py-2"><Skeleton className="h-4 w-20" /></td>
+                  <td className="px-3 py-2"><Skeleton className="h-4 w-24" /></td>
                   <td className="px-3 py-2"><Skeleton className="h-4 w-24" /></td>
                   <td className="px-3 py-2"><Skeleton className="h-4 w-24" /></td>
                   <td className="px-3 py-2"><Skeleton className="h-4 w-28" /></td>
@@ -147,6 +149,7 @@ export default function ClientsPage() {
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">First Name</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">Last Name</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">Account</th>
+                        <th className="px-4 py-3 text-left font-medium text-muted-foreground">Account Type</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">Manager</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">% Loss</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">Objective</th>
@@ -176,6 +179,7 @@ export default function ClientsPage() {
                             <td className="px-4 py-3 font-medium">{c.firstName}</td>
                             <td className="px-4 py-3 font-medium">{c.lastName}</td>
                             <td className="px-4 py-3 text-muted-foreground font-mono text-xs">{c.accountNumber}</td>
+                            <td className="px-4 py-3 text-muted-foreground">{c.typeAccount}</td>
                             <td className="px-4 py-3">{c.investmentManager ?? "—"}</td>
                             <td className="px-4 py-3">{c.lossPct}%</td>
                             <td className="px-4 py-3">

@@ -10,12 +10,16 @@ export type Client = {
   knowledgeExperience: string;
   lossPct: number;
   accountNumber: string;
+  typeAccount: string;
   salutation?: string | null;
   objective: string;
   risk: string;
   email?: string | null;
   phone?: string | null;
   address?: string | null;
+  powerOfAttorney?: string | null;
+  annualReviewDate: string | null;
+  feesCommissionRate: string | null;
 };
 
 export type ClientList = { items: Client[]; total: number };
@@ -29,12 +33,16 @@ type ClientRow = {
   knowledge_experience: string;
   loss_pct: number;
   account_number: string;
+  type_account: string;
   salutation: string | null;
   objective: string;
   risk: string;
   email: string | null;
   phone: string | null;
   address: string | null;
+  power_of_attorney?: string | null;
+  annual_review_date: string | null;
+  fees_commission_rate: string | null;
 };
 
 // Convert database row to Client type
@@ -47,12 +55,16 @@ function rowToClient(row: ClientRow): Client {
     knowledgeExperience: row.knowledge_experience,
     lossPct: row.loss_pct,
     accountNumber: row.account_number,
+    typeAccount: row.type_account,
     salutation: row.salutation,
     objective: row.objective,
     risk: row.risk,
     email: row.email,
     phone: row.phone,
     address: row.address,
+    powerOfAttorney: row.power_of_attorney,
+    annualReviewDate: row.annual_review_date,
+    feesCommissionRate: row.fees_commission_rate,
   };
 }
 
@@ -100,9 +112,9 @@ export const clientDb = {
     const searchTerm = `%${query}%`;
     const rows = await database.select<ClientRow[]>(
         `SELECT * FROM clients 
-       WHERE first_name LIKE ? OR last_name LIKE ? 
+       WHERE first_name LIKE ? OR last_name LIKE ? OR account_number LIKE ?
        ORDER BY last_name, first_name`,
-        [searchTerm, searchTerm]
+        [searchTerm, searchTerm, searchTerm]
     );
     const items = rows.map(rowToClient);
     return { items, total: items.length };
@@ -116,8 +128,9 @@ export const clientDb = {
     await database.execute(
         `INSERT INTO clients (
         id, first_name, last_name, investment_manager, knowledge_experience,
-        loss_pct, account_number, salutation, objective, risk, email, phone, address
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        loss_pct, account_number, type_account, salutation, objective, risk, email, phone, address, power_of_attorney, annual_review_date,
+        fees_commission_rate             
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           id,
           client.firstName,
@@ -126,12 +139,16 @@ export const clientDb = {
           client.knowledgeExperience,
           client.lossPct,
           client.accountNumber,
+          client.typeAccount,
           client.salutation || null,
           client.objective,
           client.risk,
           client.email || null,
           client.phone || null,
           client.address || null,
+          client.powerOfAttorney || null,
+          client.annualReviewDate || null,
+          client.feesCommissionRate || null,
         ]
     );
 
@@ -169,6 +186,10 @@ export const clientDb = {
       fields.push("account_number = ?");
       values.push(client.accountNumber);
     }
+      if (client.typeAccount !== undefined) {
+          fields.push("type_account = ?");
+          values.push(client.typeAccount);
+      }
     if (client.salutation !== undefined) {
       fields.push("salutation = ?");
       values.push(client.salutation);
@@ -192,6 +213,18 @@ export const clientDb = {
     if (client.address !== undefined) {
       fields.push("address = ?");
       values.push(client.address);
+    }
+    if (client.powerOfAttorney !== undefined) {
+          fields.push("power_of_attorney = ?");
+          values.push(client.powerOfAttorney);
+    }
+    if (client.annualReviewDate !== undefined) {
+          fields.push("annual_review_date = ?");
+          values.push(client.annualReviewDate);
+    }
+    if (client.feesCommissionRate !== undefined) {
+          fields.push("fees_commission_rate = ?");
+          values.push(client.feesCommissionRate);
     }
 
     if (fields.length === 0) return false;
@@ -236,8 +269,9 @@ export const clientDb = {
       await database.execute(
           `INSERT INTO clients (
           id, first_name, last_name, investment_manager, knowledge_experience,
-          loss_pct, account_number, salutation, objective, risk, email, phone, address
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          loss_pct, account_number, type_account, salutation, objective, risk, email, phone, address, power_of_attorney, annual_review_date,
+          fees_commission_rate
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             client.id,
             client.firstName,
@@ -246,12 +280,16 @@ export const clientDb = {
             client.knowledgeExperience,
             client.lossPct,
             client.accountNumber,
+            client.typeAccount,
             client.salutation || null,
             client.objective,
             client.risk,
             client.email || null,
             client.phone || null,
             client.address || null,
+            client.powerOfAttorney || null,
+            client.annualReviewDate || null,
+            client.feesCommissionRate || null,
           ]
       );
     }
@@ -271,8 +309,9 @@ export const clientDb = {
       await database.execute(
           `INSERT INTO clients (
           id, first_name, last_name, investment_manager, knowledge_experience,
-          loss_pct, account_number, salutation, objective, risk, email, phone, address
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          loss_pct, account_number, type_account, salutation, objective, risk, email, phone, address, power_of_attorney, annual_review_date,
+          fees_commission_rate
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             client.id,
             client.firstName,
@@ -281,12 +320,16 @@ export const clientDb = {
             client.knowledgeExperience,
             client.lossPct,
             client.accountNumber,
+            client.typeAccount,
             client.salutation || null,
             client.objective,
             client.risk,
             client.email || null,
             client.phone || null,
             client.address || null,
+            client.powerOfAttorney || null,
+            client.annualReviewDate || null,
+            client.feesCommissionRate || null,
           ]
       );
     }
