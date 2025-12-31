@@ -81,7 +81,7 @@ export function ClientSelector({ clients, selectedClientId, onSelect, loading }:
                       {client.firstName} {client.lastName}
                     </span>
                                         <span className="text-xs text-muted-foreground">
-                      {client.accountNumber}
+                      {client.accountNumber} • {client.typeAccount}
                     </span>
                                     </div>
                                 </CommandItem>
