@@ -102,7 +102,7 @@ export default function CsvImportHandling() {
             onClick={handleImport}
             disabled={loading}
         >
-            <Upload className="mr-2 h-4 w-4" />
+            <Download className="mr-2 h-4 w-4" />
             {loading ? "Importing..." : "Import CSV"}
         </Button>
     );
@@ -157,7 +157,7 @@ export function CsvExportHandling() {
 
     return (
         <Button variant="outline" size="sm" onClick={handleExport} disabled={loading}>
-            <Download className="mr-2 h-4 w-4" />
+            <Upload className="mr-2 h-4 w-4" />
             {loading ? "Exporting..." : "Export CSV"}
         </Button>
     );
