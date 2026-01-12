@@ -21,7 +21,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import CsvImportHandling from "@/components/csv-handling";
+import CsvImportHandling, {CsvExportHandling} from "@/components/csv-handling";
 
 export default function ClientsOptionsMenu() {
     const [showNewDialog, setShowNewDialog] = useState(false)
@@ -58,7 +58,7 @@ export default function ClientsOptionsMenu() {
                         <DialogClose asChild>
                             <Button variant="outline"> Cancel </Button>
                         </DialogClose>
-                        <Button variant="outline" disabled> Export CSV </Button>
+                        <CsvExportHandling/>
                         <CsvImportHandling/>
                     </DialogFooter>
                 </DialogContent>

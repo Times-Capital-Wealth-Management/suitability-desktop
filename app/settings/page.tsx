@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useTauri, useAppVersion } from "@/hooks/use-tauri";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Database, Info, Palette, Upload } from "lucide-react";
-import CsvImportHandling from "@/components/csv-handling";
+import CsvImportHandling, {CsvExportHandling} from "@/components/csv-handling";
 
 
 export default function SettingsPage() {
@@ -54,9 +54,7 @@ export default function SettingsPage() {
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" disabled>
-                    Export Data
-                  </Button>
+                    <CsvExportHandling/>
                     <CsvImportHandling/>
                 </div>
 

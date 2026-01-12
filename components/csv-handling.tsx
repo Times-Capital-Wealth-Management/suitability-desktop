@@ -1,8 +1,10 @@
-import {Upload} from "lucide-react";
+import {Upload, Download} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import fileUtils from "@/lib/file-utils";
 import clientDb, { type Client } from "@/lib/database";
 import { useState } from "react";
+import {save} from "@tauri-apps/plugin-dialog";
+import {writeFile} from "@tauri-apps/plugin-fs";
 
 export default function CsvImportHandling() {
     const [loading, setLoading] = useState(false);
@@ -102,6 +104,61 @@ export default function CsvImportHandling() {
         >
             <Upload className="mr-2 h-4 w-4" />
             {loading ? "Importing..." : "Import CSV"}
+        </Button>
+    );
+}
+
+export function CsvExportHandling() {
+    const [loading, setLoading] = useState(false);
+
+    const handleExport = async () => {
+        try {
+            setLoading(true);
+
+            const clients = (await clientDb.getAll()).items;
+
+            if (!clients.length) {
+                await fileUtils.messageDialog("Info", "No clients to export.", "info");
+                return;
+            }
+
+            const headers = [
+                "id","firstName","lastName","investmentManager","knowledgeExperience",
+                "lossPct","accountNumber","typeAccount","salutation","objective","risk",
+                "email","phone","address","powerOfAttorney","annualReviewDate","feesCommissionRate"
+            ];
+
+            const csv = [
+                headers.join(","),
+                ...clients.map(c =>
+                    headers.map(h => JSON.stringify((c as any)[h] ?? "")).join(",")
+                )
+            ].join("\n");
+
+            const path = await save({
+                defaultPath: "clients-export.csv",
+                filters: [{ name: "CSV", extensions: ["csv"] }]
+            });
+
+            if (!path) return;
+
+            await writeFile(path, new TextEncoder().encode(csv));
+
+
+
+            await fileUtils.messageDialog("Success", "Data exported successfully!", "info");
+        } catch (error) {
+            console.error("Export failed:", error);
+            await fileUtils.messageDialog("Error", "Failed to export data.", "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <Button variant="outline" size="sm" onClick={handleExport} disabled={loading}>
+            <Download className="mr-2 h-4 w-4" />
+            {loading ? "Exporting..." : "Export CSV"}
         </Button>
     );
 }
