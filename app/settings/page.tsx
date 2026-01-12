@@ -57,7 +57,7 @@ export default function SettingsPage() {
                   <Button variant="outline" size="sm" disabled>
                     Export Data
                   </Button>
-                  <CsvImportHandling/>
+                    <CsvImportHandling/>
                 </div>
 
                 <p className="text-xs text-muted-foreground mt-2">
