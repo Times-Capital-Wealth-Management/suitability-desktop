@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import ClientDetailsSheet from "@/components/clients/client-details-sheet";
-import { ChevronRight, RefreshCw, Search, Database as DbIcon } from "lucide-react";
+import { ChevronRight, RefreshCw, Search, Database as DbIcon} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { clientProvider } from "@/lib/data-provider";
 import { type Client } from "@/lib/database";
+import ClientOptionsMenu from "@/app/clients/client-options-menu";
+
 
 // ---------- UI Components ----------
 function RiskBadge({ risk }: { risk: string }) {
@@ -120,6 +122,8 @@ export default function ClientsPage() {
             <Button variant="outline" size="icon" onClick={() => fetchClients(searchQuery)}>
               <RefreshCw className="h-4 w-4" />
             </Button>
+
+            <ClientOptionsMenu/>
           </div>
         </div>
 
