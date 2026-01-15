@@ -23,12 +23,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 import CsvImportHandling, {CsvExportHandling} from "@/components/csv-handling";
 import {Input} from "@/components/ui/input";
-import {Field, FieldGroup, FieldLabel} from "@/components/ui/field";
+import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
 export default function ClientsOptionsMenu() {
     const [showNewDialog, setShowNewDialog] = useState(false)
     const [showAddDialog, setShowAddDialog] = useState(false)
+    const [step, setStep] = useState(1)
 
     return (
         <>
@@ -57,10 +58,13 @@ export default function ClientsOptionsMenu() {
                            Please provide the following details of the client you wish to add.
                         </DialogDescription>
                     </DialogHeader>
+
+                    {step === 1 && (
+                    <FieldSet>
                     <FieldGroup className="grid grid-cols-2 gap-4 pb-3">
                         <Field>
                             <FieldLabel htmlFor="firstname">First Name</FieldLabel>
-                            <Input id="firstname" name="firstname" placeholder="e.g. John" />
+                            <Input id="firstname" name="firstname" placeholder="e.g. John" required />
                         </Field>
 
                         <Field>
@@ -94,7 +98,7 @@ export default function ClientsOptionsMenu() {
 
                         <Field>
                             <FieldLabel htmlFor="lossPct">Capacity of Loss</FieldLabel>
-                            <Input id="lossPct" name="CapacityLoss" placeholder="e.g. 50%" />
+                            <Input id="lossPct" name="lossPct" placeholder="e.g. 50%" />
                         </Field>
 
                         <Field>
@@ -104,9 +108,9 @@ export default function ClientsOptionsMenu() {
                                     <SelectValue placeholder="Select Objective... "/>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="engineering">Capital Growth</SelectItem>
-                                    <SelectItem value="design">Balanced</SelectItem>
-                                    <SelectItem value="marketing">Income</SelectItem>
+                                    <SelectItem value="capitalgrowth">Capital Growth</SelectItem>
+                                    <SelectItem value="balanced">Balanced</SelectItem>
+                                    <SelectItem value="income">Income</SelectItem>
                                 </SelectContent>
                             </Select>
                         </Field>
@@ -118,20 +122,69 @@ export default function ClientsOptionsMenu() {
                                     <SelectValue placeholder="Select Risk..."/>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="engineering">Low</SelectItem>
-                                    <SelectItem value="design">Medium</SelectItem>
-                                    <SelectItem value="marketing">High</SelectItem>
+                                    <SelectItem value="low">Low</SelectItem>
+                                    <SelectItem value="medium">Medium</SelectItem>
+                                    <SelectItem value="high">High</SelectItem>
                                 </SelectContent>
                             </Select>
                         </Field>
                     </FieldGroup>
 
-                    <DialogFooter>
-                        <DialogClose asChild>
-                            <Button variant="outline">Cancel</Button>
-                        </DialogClose>
-                        <Button type="submit">Create</Button>
-                    </DialogFooter>
+                        <DialogFooter>
+                            <DialogClose asChild>
+                                <Button variant="outline">Cancel</Button>
+                            </DialogClose>
+
+                            <Button type="button" onClick={() => setStep(2)}>
+                                Next
+                            </Button>
+                        </DialogFooter>
+                    </FieldSet>
+                    )}
+
+
+                    {step === 2 && (
+                        <FieldSet>
+                            <FieldGroup className="grid grid-cols-2 gap-4 pb-3">
+                                <Field>
+                                    <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
+                                    <Input id="phone" name="phone" placeholder="e.g. 07123456789" />
+                                </Field>
+
+                                <Field>
+                                    <FieldLabel htmlFor="email">Email Address</FieldLabel>
+                                    <Input id="email" name="email" placeholder="e.g. john@mail.com" />
+                                </Field>
+
+                                <Field>
+                                    <FieldLabel htmlFor="address">Address</FieldLabel>
+                                    <Input id="address" name="address" />
+                                </Field>
+
+                                <Field>
+                                    <FieldLabel htmlFor="powerofattorney">Power of Attorney</FieldLabel>
+                                    <Input id="powerofattorney" name="powerofattorney"/>
+                                </Field>
+
+                                <Field>
+                                    <FieldLabel htmlFor="annualreviewdate">Annual Review Date</FieldLabel>
+                                    <Input id="annualreviewdate" name="annualreviewdate" placeholder="e.g. 12/12/2026" />
+                                </Field>
+
+                                <Field>
+                                    <FieldLabel htmlFor="feescommission">Fees/Commission Rate</FieldLabel>
+                                    <Input id="feescommission" name="feescommission" placeholder="e.g. 1%" />
+                                </Field>
+                            </FieldGroup>
+
+                            <DialogFooter>
+                                <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
+                                <Button type="submit">Create</Button>
+                            </DialogFooter>
+                        </FieldSet>
+                    )}
+
+
                 </DialogContent>
             </Dialog>
             <Dialog open={showNewDialog} onOpenChange={setShowNewDialog}>
