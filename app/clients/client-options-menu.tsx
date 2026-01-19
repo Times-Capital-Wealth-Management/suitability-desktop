@@ -48,7 +48,13 @@ export type ClientForm = {
 }
 
 
-export default function ClientsOptionsMenu() {
+export default function ClientsOptionsMenu({
+                                               onClientCreatedAction,
+                                           }: {
+    onClientCreatedAction: () => void
+}) {
+
+
     const [showNewDialog, setShowNewDialog] = useState(false)
     const [showAddDialog, setShowAddDialog] = useState(false)
     const [step, setStep] = useState(1)
@@ -94,8 +100,8 @@ export default function ClientsOptionsMenu() {
             })
 
 
+            onClientCreatedAction()
             setShowAddDialog(false)
-            setStep(1)
 
             setTimeout(() => {
                 fileUtils.messageDialog(
