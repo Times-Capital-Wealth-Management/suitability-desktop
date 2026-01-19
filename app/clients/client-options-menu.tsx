@@ -26,6 +26,7 @@ import {Input} from "@/components/ui/input";
 import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import clientDb from "@/lib/database";
+import fileUtils from "@/lib/file-utils";
 
 export type ClientForm = {
     firstName: string
@@ -70,25 +71,49 @@ export default function ClientsOptionsMenu() {
         feesCommissionRate: "",
     })
 
-    const handleSubmit = async () => {
-        await clientDb.create({
-            firstName: form.firstName,
-            lastName: form.lastName,
-            investmentManager: form.investmentManager || null,
-            knowledgeExperience: form.knowledgeExperience,
-            lossPct: form.lossPct,
-            accountNumber: form.accountNumber,
-            typeAccount: form.typeAccount,
-            salutation: form.salutation || null,
-            objective: form.objective,
-            risk: form.risk,
-            email: form.email || null,
-            phone: form.phone || null,
-            address: form.address || null,
-            powerOfAttorney: form.powerOfAttorney || null,
-            annualReviewDate: form.annualReviewDate || null,
-            feesCommissionRate: form.feesCommissionRate || null,
-        })
+
+    const handleCreate = async () => {
+        try {
+            await clientDb.create({
+                firstName: form.firstName,
+                lastName: form.lastName,
+                investmentManager: form.investmentManager || null,
+                knowledgeExperience: form.knowledgeExperience,
+                lossPct: form.lossPct,
+                accountNumber: form.accountNumber,
+                typeAccount: form.typeAccount,
+                salutation: form.salutation || null,
+                objective: form.objective,
+                risk: form.risk,
+                email: form.email || null,
+                phone: form.phone || null,
+                address: form.address || null,
+                powerOfAttorney: form.powerOfAttorney || null,
+                annualReviewDate: form.annualReviewDate || null,
+                feesCommissionRate: form.feesCommissionRate || null,
+            })
+
+
+            setShowAddDialog(false)
+            setStep(1)
+
+            setTimeout(() => {
+                fileUtils.messageDialog(
+                    "Success",
+                    `${form.firstName} ${form.lastName} has been added.`,
+                    "info"
+                )
+            }, 0)
+
+        } catch (err) {
+            setTimeout(() => {
+                fileUtils.messageDialog(
+                    "Error",
+                    "Failed to add client.",
+                    "error"
+                )
+            }, 0)
+        }
     }
 
 
@@ -223,42 +248,42 @@ export default function ClientsOptionsMenu() {
                             <FieldGroup className="grid grid-cols-2 gap-4 pb-3">
                                 <Field>
                                     <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
-                                    <Input id="phone" form={form.phone}
+                                    <Input id="phone" value={form.phone}
                                            onChange={e => setForm({...form, phone: e.target.value})}
                                            name="phone" placeholder="e.g. 07123456789" />
                                 </Field>
 
                                 <Field>
                                     <FieldLabel htmlFor="email">Email Address</FieldLabel>
-                                    <Input id="email" form={form.email}
+                                    <Input id="email" value={form.email}
                                            onChange={e => setForm({...form, email: e.target.value})}
                                            name="email" placeholder="e.g. john@mail.com" />
                                 </Field>
 
                                 <Field>
                                     <FieldLabel htmlFor="address">Address</FieldLabel>
-                                    <Input id="address" form={form.address}
+                                    <Input id="address" value={form.address}
                                            onChange={e => setForm({...form, address: e.target.value})}
                                            name="address" />
                                 </Field>
 
                                 <Field>
                                     <FieldLabel htmlFor="powerofattorney">Power of Attorney</FieldLabel>
-                                    <Input id="powerofattorney" form={form.powerOfAttorney}
+                                    <Input id="powerofattorney" value={form.powerOfAttorney}
                                            onChange={e => setForm({...form, powerOfAttorney: e.target.value})}
                                            name="powerofattorney"/>
                                 </Field>
 
                                 <Field>
                                     <FieldLabel htmlFor="annualreviewdate">Annual Review Date</FieldLabel>
-                                    <Input id="annualreviewdate" form={form.annualReviewDate}
+                                    <Input id="annualreviewdate" value={form.annualReviewDate}
                                            onChange={e => setForm({...form, annualReviewDate: e.target.value})}
                                            name="annualreviewdate" placeholder="e.g. 12/12/2026" />
                                 </Field>
 
                                 <Field>
                                     <FieldLabel htmlFor="feescommission">Fees/Commission Rate</FieldLabel>
-                                    <Input id="feescommission" form={form.feesCommissionRate}
+                                    <Input id="feescommission" value={form.feesCommissionRate}
                                            onChange={e => setForm({...form, feesCommissionRate: e.target.value})}
                                            name="feescommission" placeholder="e.g. 1%" />
                                 </Field>
@@ -266,7 +291,7 @@ export default function ClientsOptionsMenu() {
 
                             <DialogFooter>
                                 <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
-                                <Button onClick={handleSubmit}>Create</Button>
+                                <Button onClick={() => void handleCreate()}>Create</Button>
                             </DialogFooter>
                         </FieldSet>
                     )}
