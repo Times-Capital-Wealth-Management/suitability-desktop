@@ -54,11 +54,7 @@ export default function ClientsOptionsMenu({
     onClientCreatedAction: () => void
 }) {
 
-
-    const [showNewDialog, setShowNewDialog] = useState(false)
-    const [showAddDialog, setShowAddDialog] = useState(false)
-    const [step, setStep] = useState(1)
-    const [form, setForm] = useState<ClientForm>({
+    const EMPTY_FORM: ClientForm = {
         firstName: "",
         lastName: "",
         investmentManager: "",
@@ -75,7 +71,13 @@ export default function ClientsOptionsMenu({
         powerOfAttorney: "",
         annualReviewDate: "",
         feesCommissionRate: "",
-    })
+    }
+
+
+    const [showNewDialog, setShowNewDialog] = useState(false)
+    const [showAddDialog, setShowAddDialog] = useState(false)
+    const [step, setStep] = useState(1)
+    const [form, setForm] = useState<ClientForm>(EMPTY_FORM)
 
 
     const handleCreate = async () => {
@@ -101,7 +103,9 @@ export default function ClientsOptionsMenu({
 
 
             onClientCreatedAction()
+            setForm(EMPTY_FORM)
             setShowAddDialog(false)
+            setStep(1)
 
             setTimeout(() => {
                 fileUtils.messageDialog(
@@ -143,8 +147,13 @@ export default function ClientsOptionsMenu({
                     </DropdownMenuGroup>
                 </DropdownMenuContent>
             </DropdownMenu>
-            <Dialog open={showAddDialog} onOpenChange={setShowAddDialog} >
+            <Dialog open={showAddDialog} onOpenChange={(open) => {setShowAddDialog(open)
+            if (!open){
+                setForm(EMPTY_FORM)
+                setStep(1)
+            }}}>
                 <DialogContent className="sm:max-w-[425px]">
+                    <form autoComplete="off">
                     <DialogHeader>
                         <DialogTitle>Add Client</DialogTitle>
                         <DialogDescription>
@@ -256,6 +265,8 @@ export default function ClientsOptionsMenu({
                                     <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
                                     <Input id="phone" value={form.phone}
                                            onChange={e => setForm({...form, phone: e.target.value})}
+                                           autoComplete="new-phone"
+                                           autoCorrect="off"
                                            name="phone" placeholder="e.g. 07123456789" />
                                 </Field>
 
@@ -263,6 +274,8 @@ export default function ClientsOptionsMenu({
                                     <FieldLabel htmlFor="email">Email Address</FieldLabel>
                                     <Input id="email" value={form.email}
                                            onChange={e => setForm({...form, email: e.target.value})}
+                                           autoComplete="new-email"
+                                           autoCorrect="off"
                                            name="email" placeholder="e.g. john@mail.com" />
                                 </Field>
 
@@ -270,6 +283,8 @@ export default function ClientsOptionsMenu({
                                     <FieldLabel htmlFor="address">Address</FieldLabel>
                                     <Input id="address" value={form.address}
                                            onChange={e => setForm({...form, address: e.target.value})}
+                                           autoComplete="new-address"
+                                           autoCorrect="off"
                                            name="address" />
                                 </Field>
 
@@ -277,6 +292,8 @@ export default function ClientsOptionsMenu({
                                     <FieldLabel htmlFor="powerofattorney">Power of Attorney</FieldLabel>
                                     <Input id="powerofattorney" value={form.powerOfAttorney}
                                            onChange={e => setForm({...form, powerOfAttorney: e.target.value})}
+                                           autoComplete="new-powerofattorney"
+                                           autoCorrect="off"
                                            name="powerofattorney"/>
                                 </Field>
 
@@ -284,6 +301,8 @@ export default function ClientsOptionsMenu({
                                     <FieldLabel htmlFor="annualreviewdate">Annual Review Date</FieldLabel>
                                     <Input id="annualreviewdate" value={form.annualReviewDate}
                                            onChange={e => setForm({...form, annualReviewDate: e.target.value})}
+                                           autoComplete="new-annualreviewdate"
+                                           autoCorrect="off"
                                            name="annualreviewdate" placeholder="e.g. 12/12/2026" />
                                 </Field>
 
@@ -291,6 +310,8 @@ export default function ClientsOptionsMenu({
                                     <FieldLabel htmlFor="feescommission">Fees/Commission Rate</FieldLabel>
                                     <Input id="feescommission" value={form.feesCommissionRate}
                                            onChange={e => setForm({...form, feesCommissionRate: e.target.value})}
+                                           autoComplete="new-feescommission"
+                                           autoCorrect="off"
                                            name="feescommission" placeholder="e.g. 1%" />
                                 </Field>
                             </FieldGroup>
@@ -301,6 +322,7 @@ export default function ClientsOptionsMenu({
                             </DialogFooter>
                         </FieldSet>
                     )}
+                    </form>
 
 
                 </DialogContent>
