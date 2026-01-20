@@ -168,21 +168,21 @@ export default function ClientsOptionsMenu({
                             <FieldLabel htmlFor="firstname">First Name</FieldLabel>
                             <Input id="firstname" value={form.firstName}
                                    onChange={e => setForm({...form, firstName: e.target.value})}
-                                   name="firstname" placeholder="e.g. John"/>
+                                   name="firstname" />
                         </Field>
 
                         <Field>
                             <FieldLabel htmlFor="surname">Last Name</FieldLabel>
                             <Input id="surname" value={form.lastName}
                                    onChange={e => setForm({...form, lastName: e.target.value})}
-                                   name="surname" placeholder="e.g. Smith" />
+                                   name="surname" />
                         </Field>
 
                         <Field>
                             <FieldLabel htmlFor="accNum">Account Number</FieldLabel>
                             <Input id="accNum" value={form.accountNumber}
                                    onChange={e => setForm({...form, accountNumber: e.target.value})}
-                                   name="accNum" placeholder="e.g. SCC123456" />
+                                   name="accNum"  />
                         </Field>
 
                         <Field>
@@ -190,7 +190,7 @@ export default function ClientsOptionsMenu({
                             <Select value={form.typeAccount}
                                     onValueChange={value => setForm({...form, typeAccount: value})}>
                                 <SelectTrigger>
-                                <SelectValue placeholder="Select Type..."/>
+                                <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="ISA">ISA</SelectItem>
@@ -204,14 +204,14 @@ export default function ClientsOptionsMenu({
                             <FieldLabel htmlFor="investmanager">Investment Manager</FieldLabel>
                             <Input id="investmanager" value={form.investmentManager}
                                    onChange={e => setForm({...form, investmentManager: e.target.value})}
-                                   name="investmanager" placeholder="e.g. John Doe" />
+                                   name="investmanager" />
                         </Field>
 
                         <Field>
                             <FieldLabel htmlFor="lossPct">Capacity of Loss</FieldLabel>
                             <Input id="lossPct" value={form.lossPct}
                                    onChange={e => setForm({...form, lossPct: Number(e.target.value)})}
-                                   name="lossPct" placeholder="e.g. 50%" />
+                                   name="lossPct"  />
                         </Field>
 
                         <Field>
@@ -219,7 +219,7 @@ export default function ClientsOptionsMenu({
                             <Select value={form.objective}
                                     onValueChange={value => setForm({...form, objective: value})}>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select Objective... "/>
+                                    <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="capitalgrowth">Capital Growth</SelectItem>
@@ -234,7 +234,7 @@ export default function ClientsOptionsMenu({
                             <Select value={form.risk}
                                     onValueChange={value => setForm({...form, risk: value})}>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select Risk..."/>
+                                    <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="low">Low</SelectItem>
@@ -267,7 +267,7 @@ export default function ClientsOptionsMenu({
                                            onChange={e => setForm({...form, phone: e.target.value})}
                                            autoComplete="new-phone"
                                            autoCorrect="off"
-                                           name="phone" placeholder="e.g. 07123456789" />
+                                           name="phone"/>
                                 </Field>
 
                                 <Field>
@@ -276,7 +276,7 @@ export default function ClientsOptionsMenu({
                                            onChange={e => setForm({...form, email: e.target.value})}
                                            autoComplete="new-email"
                                            autoCorrect="off"
-                                           name="email" placeholder="e.g. john@mail.com" />
+                                           name="email"  />
                                 </Field>
 
                                 <Field>
@@ -303,7 +303,7 @@ export default function ClientsOptionsMenu({
                                            onChange={e => setForm({...form, annualReviewDate: e.target.value})}
                                            autoComplete="new-annualreviewdate"
                                            autoCorrect="off"
-                                           name="annualreviewdate" placeholder="e.g. 12/12/2026" />
+                                           name="annualreviewdate"  />
                                 </Field>
 
                                 <Field>
@@ -312,7 +312,7 @@ export default function ClientsOptionsMenu({
                                            onChange={e => setForm({...form, feesCommissionRate: e.target.value})}
                                            autoComplete="new-feescommission"
                                            autoCorrect="off"
-                                           name="feescommission" placeholder="e.g. 1%" />
+                                           name="feescommission"  />
                                 </Field>
                             </FieldGroup>
 
