@@ -123,7 +123,10 @@ export default function ClientsPage() {
               <RefreshCw className="h-4 w-4" />
             </Button>
 
-            <ClientOptionsMenu/>
+            <ClientOptionsMenu
+                onClientCreatedAction={() => fetchClients(searchQuery)}
+            />
+
           </div>
         </div>
 
