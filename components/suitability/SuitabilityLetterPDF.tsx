@@ -1,10 +1,10 @@
 "use client";
-import React, { useState } from "react";
-import { Document, Page, Text, View, StyleSheet, Image, pdf } from '@react-pdf/renderer';
-import type { SuitabilityFormState } from "./SuitabilityWorkspace";
-import { registerPDFFonts } from '@/lib/fontsPDF';
-import { isTauri } from "@/lib/tauri";
-import { Loader2 } from "lucide-react";
+import React, {useState} from "react";
+import {Document, Image, Page, pdf, StyleSheet, Text, View} from '@react-pdf/renderer';
+import type {SuitabilityFormState} from "./SuitabilityWorkspace";
+import {registerPDFFonts} from '@/lib/fontsPDF';
+import {isTauri} from "@/lib/tauri";
+import {Loader2} from "lucide-react";
 
 const styles = StyleSheet.create({
     page:{
@@ -141,12 +141,12 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                     {/* Header row */}
                     <View style={styles.tableRow}>
                         <View style={[styles.tableColHeader, {width: "63%"}, {borderRightWidth: 0}]}>
-                            <Text style={[styles.headerText]}>Shares</Text>
+                            <Text style={[styles.headerText]}>{form.trades[0].assetType === "CFD/SB" ? "Name" : "Shares"}</Text>
                         </View>
-                        <View style={[styles.tableColHeader, {width: "25%"}, {borderLeftWidth: 0}, {borderRightWidth: 0}]}>
+                        <View style={[styles.tableColHeader, {width: "20%"}, {borderLeftWidth: 0}, {borderRightWidth: 0}]}>
                             <Text style={[styles.headerText]}>{quantityOrAmount}</Text>
                         </View>
-                        <View style={[styles.tableColHeader, {width: "12%"}, {borderLeftWidth: 0}]}>
+                        <View style={[styles.tableColHeader, {width: "17%"}, {borderLeftWidth: 0}]}>
                             <Text style={[styles.headerText]}>Account</Text>
                         </View>
                     </View>
@@ -158,11 +158,11 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                                 <View style={[styles.tableCol, {width: "63%"}, {borderLeftWidth: 0}]}>
                                     <Text style={[styles.cellText]}>{t.assetName}</Text>
                                 </View>
-                                <View style={[styles.tableCol, {width: "25%"}, {borderLeftWidth: 0}]}>
+                                <View style={[styles.tableCol, {width: "20%"}, {borderLeftWidth: 0}]}>
                                     <Text style={[styles.cellText]}>{t.quantity}</Text>
                                 </View>
-                                <View style={[styles.tableCol, {width: "12%"}, {borderLeftWidth: 0}, {borderRightWidth: 0}]}>
-                                    <Text style={[styles.cellText]}>{t.accountType}</Text>
+                                <View style={[styles.tableCol, {width: "17%"}, {borderLeftWidth: 0}, {borderRightWidth: 0}]}>
+                                    <Text style={[styles.cellText]}>{t.assetType === "CFD/SB" ? "Spreadbet" : t.accountType}</Text>
                                 </View>
                             </View>
                         </View>
@@ -174,7 +174,7 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 </Text>
 
                 <Text style={styles.section}>
-                    Vinco Wealth Management has recommended you <Text style={{ fontWeight: "bold"}}>{recommendation.toLowerCase()}</Text> the above shares.
+                    Vinco Wealth Management has recommended you <Text style={{ fontWeight: "bold"}}>{recommendation.toLowerCase()}</Text> the above {form.trades[0].assetType === "CFD/SB" ? "companies" : "shares"}.
                     Below summarises how the recommendation is suited to your individual circumstances.
                 </Text>
 
@@ -286,10 +286,9 @@ function generateFileName(form: SuitabilityFormState): string {
     const date = form.trades[0].dateOfTrade.replace(/\//g, "-");
 
     // Clean up any invalid filename characters
-    const safeName = `${clientName} - ${purchaseOrSale} of ${stockNames} ${date}.pdf`
-        .replace(/[<>:"/\\|?*]/g, ""); // Remove invalid chars
-
-    return safeName;
+     // Remove invalid chars
+    return `${clientName} - ${purchaseOrSale} of ${stockNames} ${date}.pdf`
+        .replace(/[<>:"/\\|?*]/g, "");
 }
 
 // Main export component - handles both Tauri and browser
