@@ -174,7 +174,7 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 </Text>
 
                 <Text style={styles.section}>
-                    Vinco Wealth Management has recommended you <Text style={{ fontWeight: "bold"}}>{recommendation.toLowerCase()}</Text> the above {form.trades[0].assetType === "CFD/SB" ? "companies" : "shares"}.
+                    Vinco Wealth Management has recommended you <Text style={{ fontWeight: "bold"}}>{recommendation.toLowerCase()}</Text> the above {form.trades[0].assetType === "CFD/SB" ? "companies via Spreadbet" : "shares"}.
                     Below summarises how the recommendation is suited to your individual circumstances.
                 </Text>
 
@@ -210,14 +210,14 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 </Text>
                 <Text style={styles.section}>
                     The recommendation is considered to suit your relevant knowledge and experience as the
-                    firm has assessed you to have a good understanding of equities.
+                    firm has assessed you to have a good understanding of {form.trades[0].assetType === "CFD/SB" ? "equities and derivatives" : "equities"}.
                 </Text>
 
                 <Text style={[styles.subtitle]}>
                     Periodic Review of Suitability
                 </Text>
                 <Text style={styles.section}>
-                    Investing in equities will require us to perform periodic reviews to assess your
+                    Investing in {form.trades[0].assetType === "CFD/SB" ? "equities and derivatives" : "equities"} will require us to perform periodic reviews to assess your
                     continued suitability to the product. By following this advice and opening / closing the
                     recommended instrument, you will be agreeing to the following conditions:
                 </Text>

@@ -603,6 +603,7 @@ export function SuitabilityWorkspace() {
                                                 updateTrade(abs, (old) => ({
                                                     ...old,
                                                     assetType: v,
+                                                    assetRisk: v === "CFD/SB" ? "High" : form.risk
                                                 }))
                                             }
                                         >
