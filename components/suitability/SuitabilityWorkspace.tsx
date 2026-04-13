@@ -56,6 +56,7 @@ export type SuitabilityFormState = {
     clientId: string | null;
     clientName: string;
     investmentManager: string;
+    platform: "AJ Bell" | "Spreadex";
     knowledgeExperience: "Low" | "Medium" | "High";
     capacityOfLoss: string;
     accountNumber: string;
@@ -221,6 +222,7 @@ export function SuitabilityWorkspace() {
         clientId: null,
         clientName: "",
         investmentManager: "",
+        platform: "AJ Bell",
         knowledgeExperience: "Medium",
         capacityOfLoss: "",
         accountNumber: "",
@@ -303,6 +305,7 @@ export function SuitabilityWorkspace() {
                     ...s,
                     clientName: `${c.firstName} ${c.lastName}`,
                     investmentManager: c.investmentManager ?? s.investmentManager,
+                    platform: (c.platform as any) ?? s.platform,
                     knowledgeExperience: (c.knowledgeExperience as any) ?? s.knowledgeExperience,
                     capacityOfLoss: `${c.lossPct}%`,
                     accountNumber: c.accountNumber ?? s.accountNumber,
@@ -464,19 +467,35 @@ export function SuitabilityWorkspace() {
                         {showErrors && <FieldError error={errors.client.investmentManager} />}
                     </CollapsibleContent>
 
+                    {/*<CollapsibleContent className="space-y-1.5">*/}
+                    {/*    <Label>Knowledge / Experience</Label>*/}
+                    {/*    <Select*/}
+                    {/*        value={form.knowledgeExperience}*/}
+                    {/*        onValueChange={(v: any) => setForm((s) => ({ ...s, knowledgeExperience: v }))}*/}
+                    {/*    >*/}
+                    {/*        <SelectTrigger className="bg-input">*/}
+                    {/*            <SelectValue />*/}
+                    {/*        </SelectTrigger>*/}
+                    {/*        <SelectContent>*/}
+                    {/*            <SelectItem value="Low">Low</SelectItem>*/}
+                    {/*            <SelectItem value="Medium">Medium</SelectItem>*/}
+                    {/*            <SelectItem value="High">High</SelectItem>*/}
+                    {/*        </SelectContent>*/}
+                    {/*    </Select>*/}
+                    {/*</CollapsibleContent>*/}
+
                     <CollapsibleContent className="space-y-1.5">
-                        <Label>Knowledge / Experience</Label>
-                        <Select
-                            value={form.knowledgeExperience}
-                            onValueChange={(v: any) => setForm((s) => ({ ...s, knowledgeExperience: v }))}
+                        <Label>Platform</Label>
+                        <Select disabled
+                            value={form.platform}
+                            onValueChange={(v: any) => setForm((s) => ({ ...s, platform: v }))}
                         >
                             <SelectTrigger className="bg-input">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="Low">Low</SelectItem>
-                                <SelectItem value="Medium">Medium</SelectItem>
-                                <SelectItem value="High">High</SelectItem>
+                                <SelectItem value="AJ Bell">AJ Bell</SelectItem>
+                                <SelectItem value="Spreadex">Spreadex</SelectItem>
                             </SelectContent>
                         </Select>
                     </CollapsibleContent>
@@ -598,13 +617,13 @@ export function SuitabilityWorkspace() {
                                     <div className="space-y-1.5">
                                         <Label>Asset Type</Label>
                                         <RadioGroup
-                                            value={t.assetType}
-                                            onValueChange={(v: any) =>
-                                                updateTrade(abs, (old) => ({
-                                                    ...old,
-                                                    assetType: v,
-                                                }))
-                                            }
+                                            value={form.platform === "AJ Bell" ? "Equity" : "CFD/SB"}
+                                            // onValueChange={(v: any) =>
+                                            //     updateTrade(abs, (old) => ({
+                                            //         ...old,
+                                            //         assetType: form.platform === "AJ Bell" ? v = "Equity" : v = "CFD/SB"
+                                            //     }))
+                                            // }
                                         >
                                             <div className="flex items-center space-x-1.5">
                                                 <RadioGroupItem className="bg-input" value="Equity">

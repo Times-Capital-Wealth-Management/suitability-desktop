@@ -41,6 +41,7 @@ export default function CsvImportHandling() {
                     firstName: row.firstName,
                     lastName: row.lastName,
                     investmentManager: row.investmentManager || null,
+                    platform: row.platform,
                     knowledgeExperience: row.knowledgeExperience || "Low",
                     lossPct: row.lossPct || 0,
                     accountNumber: row.accountNumber || `UNK-${i}`,
@@ -123,7 +124,7 @@ export function CsvExportHandling() {
             }
 
             const headers = [
-                "id","firstName","lastName","investmentManager","knowledgeExperience",
+                "id","firstName","lastName","investmentManager","platform","knowledgeExperience",
                 "lossPct","accountNumber","typeAccount","salutation","objective","risk",
                 "email","phone","address","powerOfAttorney","annualReviewDate","feesCommissionRate"
             ];

@@ -155,6 +155,7 @@ export default function ClientsPage() {
                         <th className="w-12 px-4 py-3 text-left font-medium text-muted-foreground">Details</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">First Name</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">Last Name</th>
+                        <th className="px-4 py-3 text-left font-medium text-muted-foreground">Platform</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">Account</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">Account Type</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">Manager</th>
@@ -185,6 +186,7 @@ export default function ClientsPage() {
 
                             <td className="px-4 py-3 font-medium">{c.firstName}</td>
                             <td className="px-4 py-3 font-medium">{c.lastName}</td>
+                            <td className="px-4 py-3 font-medium">{c.platform}</td>
                             <td className="px-4 py-3 text-muted-foreground font-mono text-xs">{c.accountNumber}</td>
                             <td className="px-4 py-3 text-muted-foreground">{c.typeAccount}</td>
                             <td className="px-4 py-3">{c.investmentManager ?? "—"}</td>
@@ -194,7 +196,7 @@ export default function ClientsPage() {
                                 {c.objective}
                               </Badge>
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-3 py-3">
                               <RiskBadge risk={c.risk} />
                             </td>
                           </tr>
