@@ -174,7 +174,7 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 </Text>
 
                 <Text style={styles.section}>
-                    Vinco Wealth Management has recommended you <Text style={{ fontWeight: "bold"}}>{recommendation.toLowerCase()}</Text> the above {form.trades[0].assetType === "CFD/SB" ? "companies via Spreadbet" : "shares"}.
+                    Vinco Wealth Management has recommended you <Text style={{ fontWeight: "bold"}}>{recommendation.toLowerCase()}</Text> the above {form.platform === "Spreadex" ? "companies via Spreadbet" : "shares"}.
                     Below summarises how the recommendation is suited to your individual circumstances.
                 </Text>
 
