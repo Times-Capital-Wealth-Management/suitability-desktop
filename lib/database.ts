@@ -7,6 +7,7 @@ export type Client = {
   firstName: string;
   lastName: string;
   investmentManager?: string | null;
+  platform: string;
   knowledgeExperience: string;
   lossPct: number;
   accountNumber: string;
@@ -30,6 +31,7 @@ type ClientRow = {
   first_name: string;
   last_name: string;
   investment_manager: string | null;
+  platform: string;
   knowledge_experience: string;
   loss_pct: number;
   account_number: string;
@@ -52,6 +54,7 @@ function rowToClient(row: ClientRow): Client {
     firstName: row.first_name,
     lastName: row.last_name,
     investmentManager: row.investment_manager,
+    platform: row.platform,
     knowledgeExperience: row.knowledge_experience,
     lossPct: row.loss_pct,
     accountNumber: row.account_number,
@@ -127,15 +130,16 @@ export const clientDb = {
 
     await database.execute(
         `INSERT INTO clients (
-        id, first_name, last_name, investment_manager, knowledge_experience,
+        id, first_name, last_name, investment_manager, platform, knowledge_experience,
         loss_pct, account_number, type_account, salutation, objective, risk, email, phone, address, power_of_attorney, annual_review_date,
         fees_commission_rate             
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           id,
           client.firstName,
           client.lastName,
           client.investmentManager || null,
+          client.platform,
           client.knowledgeExperience,
           client.lossPct,
           client.accountNumber,
@@ -173,6 +177,10 @@ export const clientDb = {
     if (client.investmentManager !== undefined) {
       fields.push("investment_manager = ?");
       values.push(client.investmentManager);
+    }
+    if (client.platform !== undefined) {
+          fields.push("platform = ?");
+          values.push(client.platform);
     }
     if (client.knowledgeExperience !== undefined) {
       fields.push("knowledge_experience = ?");
@@ -268,15 +276,16 @@ export const clientDb = {
     for (const client of clients) {
       await database.execute(
           `INSERT INTO clients (
-          id, first_name, last_name, investment_manager, knowledge_experience,
+          id, first_name, last_name, investment_manager,platform, knowledge_experience,
           loss_pct, account_number, type_account, salutation, objective, risk, email, phone, address, power_of_attorney, annual_review_date,
           fees_commission_rate
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             client.id,
             client.firstName,
             client.lastName,
             client.investmentManager || null,
+            client.platform,
             client.knowledgeExperience,
             client.lossPct,
             client.accountNumber,
@@ -308,15 +317,16 @@ export const clientDb = {
     for (const client of clients) {
       await database.execute(
           `INSERT INTO clients (
-          id, first_name, last_name, investment_manager, knowledge_experience,
+          id, first_name, last_name, investment_manager, platform, knowledge_experience,
           loss_pct, account_number, type_account, salutation, objective, risk, email, phone, address, power_of_attorney, annual_review_date,
           fees_commission_rate
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             client.id,
             client.firstName,
             client.lastName,
             client.investmentManager || null,
+            client.platform,
             client.knowledgeExperience,
             client.lossPct,
             client.accountNumber,
@@ -330,6 +340,7 @@ export const clientDb = {
             client.powerOfAttorney || null,
             client.annualReviewDate || null,
             client.feesCommissionRate || null,
+
           ]
       );
     }
