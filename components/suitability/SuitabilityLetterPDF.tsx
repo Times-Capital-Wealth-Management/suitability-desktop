@@ -141,7 +141,7 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                     {/* Header row */}
                     <View style={styles.tableRow}>
                         <View style={[styles.tableColHeader, {width: "63%"}, {borderRightWidth: 0}]}>
-                            <Text style={[styles.headerText]}>{form.trades[0].assetType === "CFD/SB" ? "Name" : "Shares"}</Text>
+                            <Text style={[styles.headerText]}>{form.platform === "Spreadex" ? "Name" : "Shares"}</Text>
                         </View>
                         <View style={[styles.tableColHeader, {width: "20%"}, {borderLeftWidth: 0}, {borderRightWidth: 0}]}>
                             <Text style={[styles.headerText]}>{quantityOrAmount}</Text>
@@ -162,7 +162,7 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                                     <Text style={[styles.cellText]}>{t.quantity}</Text>
                                 </View>
                                 <View style={[styles.tableCol, {width: "17%"}, {borderLeftWidth: 0}, {borderRightWidth: 0}]}>
-                                    <Text style={[styles.cellText]}>{t.assetType === "CFD/SB" ? "Spreadbet" : t.accountType}</Text>
+                                    <Text style={[styles.cellText]}>{form.platform === "Spreadex" ? "Spreadbet" : t.accountType}</Text>
                                 </View>
                             </View>
                         </View>
@@ -210,14 +210,14 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 </Text>
                 <Text style={styles.section}>
                     The recommendation is considered to suit your relevant knowledge and experience as the
-                    firm has assessed you to have a good understanding of {form.trades[0].assetType === "CFD/SB" ? "equities and derivatives" : "equities"}.
+                    firm has assessed you to have a good understanding of {form.platform === "Spreadex" ? "equities and derivatives" : "equities"}.
                 </Text>
 
                 <Text style={[styles.subtitle]}>
                     Periodic Review of Suitability
                 </Text>
                 <Text style={styles.section}>
-                    Investing in {form.trades[0].assetType === "CFD/SB" ? "equities and derivatives" : "equities"} will require us to perform periodic reviews to assess your
+                    Investing in {form.platform === "Spreadex" ? "equities and derivatives" : "equities"} will require us to perform periodic reviews to assess your
                     continued suitability to the product. By following this advice and opening / closing the
                     recommended instrument, you will be agreeing to the following conditions:
                 </Text>
