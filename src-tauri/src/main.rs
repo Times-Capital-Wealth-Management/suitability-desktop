@@ -13,6 +13,7 @@ pub struct Client {
     pub first_name: String,
     pub last_name: String,
     pub investment_manager: Option<String>,
+    pub platform: String,
     pub knowledge_experience: String,
     pub loss_pct: i32,
     pub account_number: String,
@@ -137,6 +138,14 @@ fn main() {
             "#,
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 6,
+            description: "add_platform",
+            sql: r#"
+            ALTER TABLE clients ADD COLUMN platform TEXT NOT NULL DEFAULT "AJ Bell";
+            "#,
+            kind: MigrationKind::Up,
+        }
     ];
 
     tauri::Builder::default()

@@ -32,6 +32,7 @@ export type ClientForm = {
     firstName: string
     lastName: string
     investmentManager: string
+    platform: string
     knowledgeExperience: string
     lossPct: number
     accountNumber: string
@@ -45,6 +46,7 @@ export type ClientForm = {
     powerOfAttorney: string
     annualReviewDate: string
     feesCommissionRate: string
+
 }
 
 
@@ -58,6 +60,7 @@ export default function ClientsOptionsMenu({
         firstName: "",
         lastName: "",
         investmentManager: "",
+        platform: "",
         knowledgeExperience: "Medium",
         lossPct: 0,
         accountNumber: "",
@@ -86,6 +89,7 @@ export default function ClientsOptionsMenu({
                 firstName: form.firstName,
                 lastName: form.lastName,
                 investmentManager: form.investmentManager || null,
+                platform: form.platform,
                 knowledgeExperience: form.knowledgeExperience,
                 lossPct: form.lossPct,
                 accountNumber: form.accountNumber,
@@ -205,6 +209,20 @@ export default function ClientsOptionsMenu({
                             <Input id="investmanager" value={form.investmentManager}
                                    onChange={e => setForm({...form, investmentManager: e.target.value})}
                                    name="investmanager" />
+                        </Field>
+
+                        <Field>
+                            <FieldLabel>Investment Platform</FieldLabel>
+                            <Select value={form.platform}
+                                    onValueChange={value => setForm({...form, platform: value})}>
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="AJ Bell">AJ Bell</SelectItem>
+                                    <SelectItem value="Spreadex">Spreadex</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </Field>
 
                         <Field>
