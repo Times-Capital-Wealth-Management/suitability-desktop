@@ -1,11 +1,10 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useTauri, useAppVersion } from "@/hooks/use-tauri";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Database, Info, Palette, Upload } from "lucide-react";
+import { Database, Info, Palette} from "lucide-react";
 import CsvImportHandling, {CsvExportHandling} from "@/components/csv-handling";
 
 
@@ -58,9 +57,15 @@ export default function SettingsPage() {
                     <CsvImportHandling/>
                 </div>
 
-                <p className="text-xs text-muted-foreground mt-2">
-                  CSV headers must match: firstName, lastName, lossPct, objective, risk, etc.
+                <div className="text-xs text-muted-foreground mt-2">
+                <p>
+                  CSV headers must match (in order):
                 </p>
+                <p>
+                  firstName, lastName, investmentManager, platform, knowledgeExperience, lossPct, accountNumber,
+                  typeAccount, salutation, objective, risk, email, phone, address, powerOfAttorney, annualReviewDate, feesCommissionRate
+                </p>
+                </div>
               </div>
             </Card>
         )}
