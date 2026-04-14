@@ -644,7 +644,7 @@ export function SuitabilityWorkspace() {
                                     <div className="space-y-1.5">
                                         <Label>Asset Risk</Label>
                                         <Select
-                                            value={t.assetRisk}
+                                            value={form.platform === "Spreadex" ? t.assetRisk = "High" : t.assetRisk}
                                             onValueChange={(v: any) =>
                                                 updateTrade(abs, (old) => ({
                                                     ...old,
