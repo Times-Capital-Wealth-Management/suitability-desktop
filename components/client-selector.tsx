@@ -64,8 +64,13 @@ export function ClientSelector({ clients, selectedClientId, onSelect, loading }:
                             {clients.map((client) => (
                                 <CommandItem
                                     key={client.id}
-                                    value={`${client.firstName} ${client.lastName}`}
-                                    onSelect={() => {
+                                    value={client.id}
+                                    keywords={[
+                                        `${client.firstName} ${client.lastName}`,
+                                        client.accountNumber,
+                                        client.typeAccount,
+                                    ]}
+                                     onSelect={() => {
                                         onSelect(client);
                                         setOpen(false);
                                     }}
