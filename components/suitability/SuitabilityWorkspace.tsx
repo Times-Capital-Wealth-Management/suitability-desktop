@@ -595,6 +595,7 @@ export function SuitabilityWorkspace() {
                                         <Label>Account Type</Label>
                                         <RadioGroup
                                             value={t.accountType}
+                                            disabled={form.platform !== "AJ Bell"}
                                             onValueChange={(v: any) =>
                                                 updateTrade(abs, (old) => ({
                                                     ...old,
