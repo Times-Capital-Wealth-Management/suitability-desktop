@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import ClientDetailsSheet from "@/components/clients/client-details-sheet";
-import { ChevronRight, RefreshCw, Search, Database as DbIcon} from "lucide-react";
+import {ChevronRight, RefreshCw, Search, Database as DbIcon, TrashIcon} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { clientProvider } from "@/lib/data-provider";
-import { type Client } from "@/lib/database";
+import {type Client, clientDb} from "@/lib/database";
 import ClientOptionsMenu from "@/app/clients/client-options-menu";
+import fileUtils from "@/lib/file-utils";
 
 
 // ---------- UI Components ----------
@@ -26,6 +27,54 @@ function RiskBadge({ risk }: { risk: string }) {
       >
       {risk}
     </span>
+  );
+}
+
+function DeleteClient({
+                        clientId,
+                        onClientCreatedAction,
+                      }: {
+  clientId: string;
+  onClientCreatedAction: () => void;
+}) {
+  const handleDelete = async () => {
+    try {
+      const confirmed = await fileUtils.confirmDialog(
+          "Are you sure?",
+          "This will permanently delete the client."
+      );
+
+      if (!confirmed) return;
+
+      const success = await clientDb.delete(clientId);
+
+      if (!success) throw new Error("Delete failed");
+
+      onClientCreatedAction();
+
+      fileUtils.messageDialog(
+          "Success",
+          "Client deleted.",
+          "info"
+      );
+    } catch {
+      fileUtils.messageDialog(
+          "Error",
+          "Failed to delete client.",
+          "error"
+      );
+    }
+  };
+
+  return (
+      <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 w-8 p-0 text-red-600 hover:bg-red-50"
+          onClick={handleDelete}
+      >
+        <TrashIcon />
+      </Button>
   );
 }
 
@@ -162,6 +211,7 @@ export default function ClientsPage() {
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">% Loss</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">Objective</th>
                         <th className="px-4 py-3 text-left font-medium text-muted-foreground">Risk</th>
+                        <th className="px-4 py-3 text-left font-medium text-muted-foreground"></th>
                       </tr>
                       </thead>
 
@@ -191,13 +241,18 @@ export default function ClientsPage() {
                             <td className="px-4 py-3 text-muted-foreground">{c.typeAccount}</td>
                             <td className="px-4 py-3">{c.investmentManager ?? "—"}</td>
                             <td className="px-4 py-3">{c.lossPct}%</td>
-                            <td className="px-4 py-3">
+                            <td className="px-3 py-3">
                               <Badge variant="secondary" className="font-normal text-xs">
                                 {c.objective}
                               </Badge>
                             </td>
                             <td className="px-3 py-3">
                               <RiskBadge risk={c.risk} />
+                            </td>
+                            <td className="px-3 py-3">
+                              <DeleteClient
+                                  clientId={c.id}
+                                  onClientCreatedAction={fetchClients}/>
                             </td>
                           </tr>
                       ))}
