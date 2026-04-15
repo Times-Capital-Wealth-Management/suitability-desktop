@@ -113,7 +113,7 @@ const timeNow = new Date().toLocaleTimeString("en-GB", {hour: "2-digit", minute:
 // The actual PDF Document component
 function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
     const recommendation = form.trades.length > 0 ? form.trades[0].side : "—";
-    const quantityOrAmount = form.trades[0]?.side === "Sell" ? "Quantity" : "Amount";
+    const quantityOrAmount = form.trades[0]?.side === "Sell" || form.trades[0]?.side === "Buy" ? "Quantity" : "Amount";
     const tradeTime = form.trades.length > 0 ? form.trades[0].timeOfTrade : "—";
     const tradeDate = form.trades.length > 0 ? form.trades[0].dateOfTrade : "—";
 

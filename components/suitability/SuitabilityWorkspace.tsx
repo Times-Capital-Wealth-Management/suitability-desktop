@@ -45,7 +45,7 @@ type Trade = {
     accountType: "ISA" | "GIA";
     assetType: "Equity" | "CFD/SB";
     assetRisk: "Low" | "Medium" | "High";
-    side: "Buy" | "Sell" | "Invest";
+    side: "Buy" | "Sell" | "Invest" | "Raise";
     quantity: string;
     timeOfTrade: string;
     dateOfTrade: string;
@@ -691,12 +691,13 @@ export function SuitabilityWorkspace() {
                                                 <SelectItem value="Buy">Buy</SelectItem>
                                                 <SelectItem value="Sell">Sell</SelectItem>
                                                 <SelectItem value="Invest">Invest</SelectItem>
+                                                <SelectItem value="Raise">Raise</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
 
                                     <div className="space-y-1.5">
-                                        <Label>{t.side === "Sell" ? "Quantity" : "Amount"}</Label>
+                                        <Label>{(t.side === "Sell" || t.side === "Buy") ? "Quantity" : "Amount"}</Label>
                                         <Input
                                             className={`bg-input ${showErrors && errors.trades[abs]?.quantity ? "border-red-500" : ""}` }
                                             inputMode="numeric"
@@ -715,7 +716,7 @@ export function SuitabilityWorkspace() {
                                                 }
 
                                                 // auto insert £ for invest when you type
-                                                if (t.side === "Invest") {
+                                                if (t.side === "Invest" || t.side === "Raise") {
                                                     v = "£" + v.replace(/£/g, "");
                                                 }
 
