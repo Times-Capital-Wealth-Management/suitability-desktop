@@ -328,10 +328,10 @@ export function SuitabilityWorkspace() {
     const addTrade = () => {
         const newTrade: Trade = {
             assetName: "",
-            accountType: "ISA",
+            accountType: form.trades[0].accountType,
             assetType: "Equity",
             assetRisk: "Medium",
-            side: "Buy",
+            side: form.trades[0].side,
             quantity: "",
             timeOfTrade: form.trades[0].timeOfTrade,
             dateOfTrade: form.trades[0].dateOfTrade,
