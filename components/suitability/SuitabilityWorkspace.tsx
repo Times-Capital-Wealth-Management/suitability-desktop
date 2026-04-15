@@ -217,6 +217,7 @@ export function SuitabilityWorkspace() {
         trades: [emptyTradeErrors],
     });
     const [showErrors, setShowErrors] = useState(false);
+    const today = new Date(new Date().toISOString()).toLocaleDateString("en-GB");
 
     const [form, setForm] = useState<SuitabilityFormState>({
         clientId: null,
@@ -238,7 +239,7 @@ export function SuitabilityWorkspace() {
                 side: "Buy",
                 quantity: "",
                 timeOfTrade: "",
-                dateOfTrade: "",
+                dateOfTrade: today,
                 reasons: ["", "", ""],
             },
         ],
@@ -330,8 +331,8 @@ export function SuitabilityWorkspace() {
             assetRisk: "Medium",
             side: "Buy",
             quantity: "",
-            timeOfTrade: "",
-            dateOfTrade: "",
+            timeOfTrade: form.trades[0].timeOfTrade,
+            dateOfTrade: form.trades[0].dateOfTrade,
             reasons: ["", "", ""],
         };
 
