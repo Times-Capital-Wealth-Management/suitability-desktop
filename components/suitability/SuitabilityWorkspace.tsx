@@ -245,6 +245,8 @@ export function SuitabilityWorkspace() {
         ],
     });
 
+
+
     const SuitabilityLetterPDF = dynamic(() => import("@/components/suitability/SuitabilityLetterPDF"), { ssr: false });
 
     const [isOpen, setIsOpen] = React.useState(false);
@@ -696,15 +698,33 @@ export function SuitabilityWorkspace() {
                                     <div className="space-y-1.5">
                                         <Label>{t.side === "Sell" ? "Quantity" : "Amount"}</Label>
                                         <Input
-                                            className={`bg-input ${showErrors && errors.trades[abs]?.quantity ? "border-red-500" : ""}`}
+                                            className={`bg-input ${showErrors && errors.trades[abs]?.quantity ? "border-red-500" : ""}` }
                                             inputMode="numeric"
                                             value={t.quantity}
-                                            onChange={(e) =>
+                                            onChange={(e) => {
+
+                                                let v = e.target.value
+
+                                                const deleting = v.length < (t.quantity || " ").length;
+                                                if(deleting) {
+                                                    updateTrade(abs, (old) => ({
+                                                        ...old,
+                                                        quantity: v,
+                                                    }))
+                                                    return;
+                                                }
+
+                                                // auto insert £ for invest when you type
+                                                if (t.side === "Invest") {
+                                                    v = "£" + v.replace(/£/g, "");
+                                                }
+
                                                 updateTrade(abs, (old) => ({
                                                     ...old,
-                                                    quantity: e.target.value,
+                                                    quantity: v,
                                                 }))
-                                            }
+
+                                            }}
                                             placeholder={`e.g. 1000`}
                                         />
                                         {showErrors && <FieldError error={errors.trades[abs]?.quantity} />}
