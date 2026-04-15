@@ -280,14 +280,21 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
 // Generate filename: "ClientName - Purchase of StockName 16-12-2025.pdf"
 function generateFileName(form: SuitabilityFormState): string {
     const clientName = form.clientName || "Client";
-    const purchaseOrSale = form.trades[0]?.side === "Sell" ? "Sale" : "Purchase";
+    let titlePdf;
+    if(form.trades[0]?.side === "Raise"){
+        titlePdf = "Raise"
+    } else if (form.trades[0]?.side === "Sell"){
+       titlePdf = "Sale"
+    } else{
+       titlePdf = "Purchase"
+    }
     const stockNames = form.trades.map(t => t.assetName).filter(Boolean).join(", ") || "Stock";
     //const date = new Date().toLocaleDateString("en-GB").replace(/\//g, "-"); // 16-12-2025
     const date = form.trades[0].dateOfTrade.replace(/\//g, "-");
 
     // Clean up any invalid filename characters
      // Remove invalid chars
-    return `${clientName} - ${purchaseOrSale} of ${stockNames} ${date}.pdf`
+    return `${clientName} - ${titlePdf} of ${stockNames} ${date}.pdf`
         .replace(/[<>:"/\\|?*]/g, "");
 }
 
