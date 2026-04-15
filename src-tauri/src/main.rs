@@ -142,7 +142,7 @@ fn main() {
             version: 6,
             description: "add_platform",
             sql: r#"
-            ALTER TABLE clients ADD COLUMN platform TEXT NOT NULL DEFAULT "AJ Bell";
+            ALTER TABLE clients ADD COLUMN platform TEXT NOT NULL DEFAULT 'AJ Bell';
             "#,
             kind: MigrationKind::Up,
         }
