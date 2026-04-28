@@ -107,8 +107,6 @@ const styles = StyleSheet.create({
     }
 });
 
-const dateNow = new Date().toLocaleDateString("en-GB");
-const timeNow = new Date().toLocaleTimeString("en-GB", {hour: "2-digit", minute: "2-digit"});
 
 // The actual PDF Document component
 function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
@@ -116,6 +114,8 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
     const quantityOrAmount = form.trades[0]?.side === "Sell" || form.trades[0]?.side === "Buy" ? "Quantity" : "Amount";
     const tradeTime = form.trades.length > 0 ? form.trades[0].timeOfTrade : "—";
     const tradeDate = form.trades.length > 0 ? form.trades[0].dateOfTrade : "—";
+    const dateNow = new Date().toLocaleDateString("en-GB");
+    const timeNow = new Date().toLocaleTimeString("en-GB", {hour: "2-digit", minute: "2-digit"});
 
     return (
         <Document>
