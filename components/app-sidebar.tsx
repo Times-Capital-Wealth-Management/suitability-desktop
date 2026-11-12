@@ -27,7 +27,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 // user (wire to session later)
 const user = {
-    name: "Turon Miah",
+    name: "User",
     role: "Advisor",
     email: "advisor@company.com",
     image: null as string | null,
