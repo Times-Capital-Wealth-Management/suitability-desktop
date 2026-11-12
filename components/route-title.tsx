@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { usePathname } from "next/navigation";
-import { Home, FileText, Settings, BarChart3, BookUser } from "lucide-react";
+import {Home, FileText, Settings, BarChart3, BookUser, History} from "lucide-react";
 
 const MAP: Record<string, { label: string; Icon?: React.ComponentType<any> }> = {
     "": { label: "Home", Icon: Home },        // "/"
@@ -10,6 +10,7 @@ const MAP: Record<string, { label: string; Icon?: React.ComponentType<any> }> = 
     suitability: { label: "Suitability", Icon: BarChart3 },
     documents: { label: "Documents", Icon: FileText },
     clients: { label: "Clients", Icon: BookUser }, // ✅ added
+    trade_history: {label: "Trade History", Icon: History },
     settings: { label: "Settings", Icon: Settings },
 };
 

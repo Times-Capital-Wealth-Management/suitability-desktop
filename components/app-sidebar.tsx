@@ -15,7 +15,7 @@ import {
     SidebarTrigger,
     useSidebar,
 } from "@/components/ui/sidebar";
-import { Home, BarChart, FileText, Settings, BookUser } from "lucide-react";
+import {Home, BarChart, FileText, Settings, BookUser, HistoryIcon} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     DropdownMenu,
@@ -142,6 +142,14 @@ export function AppSidebar() {
                                 <Link href="/clients" className="flex items-center gap-2">
                                     <BookUser />
                                     <span>Clients</span>
+                                </Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton asChild>
+                                <Link href="/trade_history" className="flex items-center gap-2">
+                                    <HistoryIcon />
+                                    <span>Trade History</span>
                                 </Link>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
