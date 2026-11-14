@@ -10,7 +10,11 @@ import { Input } from "@/components/ui/input";
 import { clientProvider } from "@/lib/data-provider";
 import {type Client, clientDb} from "@/lib/database";
 import ClientOptionsMenu from "@/app/clients/client-options-menu";
-import fileUtils from "@/lib/file-utils";
+import { toast } from "sonner";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 
 // ---------- UI Components ----------
@@ -37,44 +41,53 @@ function DeleteClient({
   clientId: string;
   onClientCreatedAction: () => void;
 }) {
+  const [open, setOpen] = useState(false);
   const handleDelete = async () => {
     try {
-      const confirmed = await fileUtils.confirmDialog(
-          "Are you sure?",
-          "This will permanently delete the client."
-      );
-
-      if (!confirmed) return;
-
       const success = await clientDb.delete(clientId);
 
       if (!success) throw new Error("Delete failed");
 
       onClientCreatedAction();
 
-      fileUtils.messageDialog(
-          "Success",
-          "Client deleted.",
-          "info"
-      );
-    } catch {
-      fileUtils.messageDialog(
-          "Error",
-          "Failed to delete client.",
-          "error"
-      );
+      toast.success("Client deleted")
+
+    } catch (error) {
+      toast.error(`Failed to delete client: ${String(error)}`)
     }
   };
 
   return (
+    <>
       <Button
           variant="ghost"
           size="sm"
           className="h-8 w-8 p-0 text-red-600 hover:bg-red-50"
-          onClick={handleDelete}
+          onClick={() => setOpen(true)}
       >
         <TrashIcon />
       </Button>
+
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the client.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+                className="bg-red-600 hover:bg-red-700"
+                onClick={handleDelete}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 
