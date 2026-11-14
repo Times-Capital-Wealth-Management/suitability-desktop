@@ -337,7 +337,7 @@ export default function ClientsOptionsMenu({
 
                             <DialogFooter>
                                 <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
-                                <Button onClick={() => void handleCreate()}>Create</Button>
+                                <Button type="button" onClick={() => void handleCreate()}>Create</Button>
                             </DialogFooter>
                         </FieldSet>
                     )}
