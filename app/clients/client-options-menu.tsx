@@ -200,7 +200,11 @@ export default function ClientsOptionsMenu({
                                 <SelectContent>
                                     <SelectItem value="ISA">ISA</SelectItem>
                                     <SelectItem value="GIA">GIA</SelectItem>
-                                    <SelectItem value="Other">Other</SelectItem>
+                                    <SelectItem value="CFD">CFD</SelectItem>
+                                    <SelectItem value="Sread Bet">Spread Bet</SelectItem>
+                                    <SelectItem value="JISA">JISA</SelectItem>
+                                    <SelectItem value="SIPP">SIPP</SelectItem>
+                                    <SelectItem value="Corporate">Corporate</SelectItem>
                                 </SelectContent>
                             </Select>
                         </Field>
