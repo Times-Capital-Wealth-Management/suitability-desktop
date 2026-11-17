@@ -98,11 +98,10 @@ export default function Home() {
       {/* Desktop-only features notice */}
       {!isLoading && isDesktop && (
         <Card className="p-6 bg-primary/5 border-primary/20">
-          <h3 className="font-semibold mb-2">Desktop Features Enabled</h3>
+          <h3 className="font-semibold mb-2">Latest Updates</h3>
           <ul className="text-sm text-muted-foreground space-y-1">
-            <li>✓ Local SQLite database for offline access</li>
-            <li>✓ Native file save dialogs for PDFs</li>
-            <li>✓ Faster performance with native rendering</li>
+            <li>✓ Mac support, including CSV import and client deletion</li>
+            <li>✓ Success and error messages now show as notifications</li>
           </ul>
         </Card>
       )}

@@ -18,7 +18,6 @@ import {
     DropdownMenuContent,
     DropdownMenuGroup,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import CsvImportHandling, {CsvExportHandling} from "@/components/csv-handling";
@@ -26,7 +25,7 @@ import {Input} from "@/components/ui/input";
 import {Field, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import clientDb from "@/lib/database";
-import fileUtils from "@/lib/file-utils";
+import {toast} from "sonner";
 
 export type ClientForm = {
     firstName: string
@@ -112,20 +111,22 @@ export default function ClientsOptionsMenu({
             setStep(1)
 
             setTimeout(() => {
-                fileUtils.messageDialog(
-                    "Success",
-                    `${form.firstName} ${form.lastName} has been added.`,
-                    "info"
-                )
+                toast.success(`${form.firstName} ${form.lastName} has been added`)
+                // fileUtils.messageDialog(
+                //     "Success",
+                //     `${form.firstName} ${form.lastName} has been added.`,
+                //     "info"
+                // )
             }, 0)
 
         } catch (err) {
             setTimeout(() => {
-                fileUtils.messageDialog(
-                    "Error",
-                    "Failed to add client.",
-                    "error"
-                )
+                toast.error(`Failed to add client: ${String(err)}`)
+                // fileUtils.messageDialog(
+                //     "Error",
+                //     "Failed to add client.",
+                //     "error"
+                // )
             }, 0)
         }
     }
@@ -336,7 +337,7 @@ export default function ClientsOptionsMenu({
 
                             <DialogFooter>
                                 <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
-                                <Button onClick={() => void handleCreate()}>Create</Button>
+                                <Button type="button" onClick={() => void handleCreate()}>Create</Button>
                             </DialogFooter>
                         </FieldSet>
                     )}
