@@ -312,7 +312,8 @@ export function SuitabilityWorkspace() {
                     knowledgeExperience: (c.knowledgeExperience as any) ?? s.knowledgeExperience,
                     capacityOfLoss: `${c.lossPct}%`,
                     accountNumber: c.accountNumber ?? s.accountNumber,
-                    salutation: c.salutation ?? s.salutation,
+                    salutation:  c.salutation?.trim() || c.firstName,
+                        //c.salutation ?? s.salutation,
                     objective: normalizedObjective as "Balance" | "Capital Growth" | "Income",
                     risk: (c.risk as any) ?? s.risk,
                 }));
@@ -930,9 +931,9 @@ export function SuitabilityWorkspace() {
                     </div>
                     <div className="flex gap-3">
                         <LetterPreviewSheet form={form} />
-                        <Button>
-                            <SuitabilityLetterPDF form={form} onBeforeSave={validateBeforeSave} />
-                        </Button>
+
+                        <SuitabilityLetterPDF form={form} onBeforeSave={validateBeforeSave} />
+
                     </div>
                 </div>
             </Card>

@@ -5,6 +5,7 @@ import type {SuitabilityFormState} from "./SuitabilityWorkspace";
 import {registerPDFFonts} from '@/lib/fontsPDF';
 import {isTauri} from "@/lib/tauri";
 import {Loader2} from "lucide-react";
+import {Button} from "@/components/ui/button";
 
 const styles = StyleSheet.create({
     page:{
@@ -402,7 +403,7 @@ export default function SuitabilityLetterPDF({ form, onBeforeSave }: Suitability
     };
 
     return (
-        <span onClick={handleSave} style={{ cursor: loading ? "wait" : "pointer" }}>
+        <Button onClick={handleSave} style={{ cursor: loading ? "wait" : "pointer" }}>
             {loading ? (
                 <>
                     <Loader2 className="inline h-4 w-4 mr-2 animate-spin" />
@@ -411,6 +412,6 @@ export default function SuitabilityLetterPDF({ form, onBeforeSave }: Suitability
             ) : (
                 "Generate Letter"
             )}
-        </span>
+        </Button>
     );
 }
