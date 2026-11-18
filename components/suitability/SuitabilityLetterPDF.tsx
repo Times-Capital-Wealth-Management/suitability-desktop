@@ -211,7 +211,7 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                     Your Investment Objectives and Risk Tolerance
                 </Text>
                 <Text style={[styles.list, {marginBottom: 5}, {marginTop: 10}]}>
-                    Your objective is to seek returns in the form of both income and capital appreciation ({form.objective}).
+                    Your objective is to seek returns in the form of capital appreciation.
                 </Text>
                 <Text style={[styles.list, {marginTop: 0}]}>
                     Your tolerance to risk is deemed <Text style={{ fontWeight: "bold"}}>{form.risk.toLowerCase()}</Text> and your capacity for loss is <Text style={{ fontWeight: "bold"}}>{form.capacityOfLoss}</Text> of the total portfolio.
