@@ -47,6 +47,55 @@ export type ClientForm = {
     feesCommissionRate: string
 
 }
+type FieldError = string | null
+
+type ClientErrors = {
+    firstName: FieldError
+    lastName: FieldError
+    accountNumber: FieldError
+    typeAccount: FieldError
+    investmentManager: FieldError
+    platform: FieldError
+    lossPct: FieldError
+}
+
+const emptyClientErrors: ClientErrors = {
+    firstName: null,
+    lastName: null,
+    accountNumber: null,
+    typeAccount: null,
+    investmentManager: null,
+    platform: null,
+    lossPct: null,
+}
+
+function validateStep1(form: ClientForm): ClientErrors {
+    const errors: ClientErrors = { ...emptyClientErrors }
+
+    if (!form.firstName.trim()) errors.firstName = "First name is required"
+    if (!form.lastName.trim()) errors.lastName = "Last name is required"
+    if (!form.accountNumber.trim()) errors.accountNumber = "Account number is required"
+    if (!form.typeAccount) errors.typeAccount = "Account type is required"
+    if (!form.investmentManager.trim()) errors.investmentManager = "Investment manager is required"
+    if (!form.platform) errors.platform = "Platform is required"
+
+    if (Number.isNaN(form.lossPct) || form.lossPct < 0 || form.lossPct > 100) {
+        errors.lossPct = "Must be between 0 and 100"
+    } else if (form.typeAccount === "CFD" && form.lossPct !== 100) {
+        errors.lossPct = "Capacity of loss must be 100% for CFD"
+    }
+
+    return errors
+}
+
+function hasErrors(errors: ClientErrors): boolean {
+    return Object.values(errors).some((e) => e !== null)
+}
+
+function ErrorText({ error }: { error: FieldError }) {
+    if (!error) return null
+    return <p className="text-xs text-red-500">{error}</p>
+}
 
 
 export default function ClientsOptionsMenu({
@@ -80,6 +129,8 @@ export default function ClientsOptionsMenu({
     const [showAddDialog, setShowAddDialog] = useState(false)
     const [step, setStep] = useState(1)
     const [form, setForm] = useState<ClientForm>(EMPTY_FORM)
+    const [showErrors, setShowErrors] = useState(false)
+    const errors = showErrors ? validateStep1(form) : emptyClientErrors
 
 
     const handleCreate = async () => {
@@ -152,11 +203,14 @@ export default function ClientsOptionsMenu({
                     </DropdownMenuGroup>
                 </DropdownMenuContent>
             </DropdownMenu>
-            <Dialog open={showAddDialog} onOpenChange={(open) => {setShowAddDialog(open)
-            if (!open){
-                setForm(EMPTY_FORM)
-                setStep(1)
-            }}}>
+            <Dialog open={showAddDialog} onOpenChange={(open) => {
+                setShowAddDialog(open)
+                if (!open) {
+                    setForm(EMPTY_FORM)
+                    setStep(1)
+                    setShowErrors(false)
+                }
+            }}>
                 <DialogContent className="sm:max-w-[425px]">
                     <form autoComplete="off">
                     <DialogHeader>
@@ -168,74 +222,90 @@ export default function ClientsOptionsMenu({
 
                     {step === 1 && (
                     <FieldSet>
-                    <FieldGroup className="grid grid-cols-2 gap-4 pb-3">
-                        <Field>
-                            <FieldLabel htmlFor="firstname">First Name</FieldLabel>
-                            <Input id="firstname" value={form.firstName}
-                                   onChange={e => setForm({...form, firstName: e.target.value})}
-                                   name="firstname" />
-                        </Field>
+                        <FieldGroup className="grid grid-cols-2 gap-4 pb-3">
+                            <Field>
+                                <FieldLabel htmlFor="firstname">First Name</FieldLabel>
+                                <Input id="firstname" value={form.firstName}
+                                       className={errors.firstName ? "border-red-500" : ""}
+                                       onChange={e => setForm({...form, firstName: e.target.value})}
+                                       name="firstname" />
+                                <ErrorText error={errors.firstName} />
+                            </Field>
 
-                        <Field>
-                            <FieldLabel htmlFor="surname">Last Name</FieldLabel>
-                            <Input id="surname" value={form.lastName}
-                                   onChange={e => setForm({...form, lastName: e.target.value})}
-                                   name="surname" />
-                        </Field>
+                            <Field>
+                                <FieldLabel htmlFor="surname">Last Name</FieldLabel>
+                                <Input id="surname" value={form.lastName}
+                                       className={errors.lastName ? "border-red-500" : ""}
+                                       onChange={e => setForm({...form, lastName: e.target.value})}
+                                       name="surname" />
+                                <ErrorText error={errors.lastName} />
+                            </Field>
 
-                        <Field>
-                            <FieldLabel htmlFor="accNum">Account Number</FieldLabel>
-                            <Input id="accNum" value={form.accountNumber}
-                                   onChange={e => setForm({...form, accountNumber: e.target.value})}
-                                   name="accNum"  />
-                        </Field>
+                            <Field>
+                                <FieldLabel htmlFor="accNum">Account Number</FieldLabel>
+                                <Input id="accNum" value={form.accountNumber}
+                                       className={errors.accountNumber ? "border-red-500" : ""}
+                                       onChange={e => setForm({...form, accountNumber: e.target.value})}
+                                       name="accNum" />
+                                <ErrorText error={errors.accountNumber} />
+                            </Field>
 
-                        <Field>
-                            <FieldLabel>Account Type</FieldLabel>
-                            <Select value={form.typeAccount}
-                                    onValueChange={value => setForm({...form, typeAccount: value})}>
-                                <SelectTrigger>
-                                <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="ISA">ISA</SelectItem>
-                                    <SelectItem value="GIA">GIA</SelectItem>
-                                    <SelectItem value="CFD">CFD</SelectItem>
-                                    <SelectItem value="Sread Bet">Spread Bet</SelectItem>
-                                    <SelectItem value="JISA">JISA</SelectItem>
-                                    <SelectItem value="SIPP">SIPP</SelectItem>
-                                    <SelectItem value="Corporate">Corporate</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </Field>
+                            <Field>
+                                <FieldLabel>Account Type</FieldLabel>
+                                <Select value={form.typeAccount}
+                                        onValueChange={value => setForm({
+                                            ...form,
+                                            typeAccount: value,
+                                            lossPct: value === "CFD" ? 100 : form.lossPct,
+                                        })}>
+                                    <SelectTrigger className={errors.typeAccount ? "border-red-500" : ""}>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="ISA">ISA</SelectItem>
+                                        <SelectItem value="GIA">GIA</SelectItem>
+                                        <SelectItem value="CFD">CFD</SelectItem>
+                                        <SelectItem value="Spread Bet">Spread Bet</SelectItem>
+                                        <SelectItem value="JISA">JISA</SelectItem>
+                                        <SelectItem value="Corporate">Corporate</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <ErrorText error={errors.typeAccount} />
+                            </Field>
 
-                        <Field>
-                            <FieldLabel htmlFor="investmanager">Investment Manager</FieldLabel>
-                            <Input id="investmanager" value={form.investmentManager}
-                                   onChange={e => setForm({...form, investmentManager: e.target.value})}
-                                   name="investmanager" />
-                        </Field>
+                            <Field>
+                                <FieldLabel htmlFor="investmanager">Investment Manager</FieldLabel>
+                                <Input id="investmanager" value={form.investmentManager}
+                                       className={errors.investmentManager ? "border-red-500" : ""}
+                                       onChange={e => setForm({...form, investmentManager: e.target.value})}
+                                       name="investmanager" />
+                                <ErrorText error={errors.investmentManager} />
+                            </Field>
 
-                        <Field>
-                            <FieldLabel>Investment Platform</FieldLabel>
-                            <Select value={form.platform}
-                                    onValueChange={value => setForm({...form, platform: value})}>
-                                <SelectTrigger>
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="AJ Bell">AJ Bell</SelectItem>
-                                    <SelectItem value="Spreadex">Spreadex</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </Field>
+                            <Field>
+                                <FieldLabel>Investment Platform</FieldLabel>
+                                <Select value={form.platform}
+                                        onValueChange={value => setForm({...form, platform: value})}>
+                                    <SelectTrigger className={errors.platform ? "border-red-500" : ""}>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="AJ Bell">AJ Bell</SelectItem>
+                                        <SelectItem value="Spreadex">Spreadex</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <ErrorText error={errors.platform} />
+                            </Field>
 
-                        <Field>
-                            <FieldLabel htmlFor="lossPct">Capacity of Loss</FieldLabel>
-                            <Input id="lossPct" value={form.lossPct}
-                                   onChange={e => setForm({...form, lossPct: Number(e.target.value)})}
-                                   name="lossPct"  />
-                        </Field>
+                            <Field>
+                                <FieldLabel htmlFor="lossPct">Capacity of Loss</FieldLabel>
+                                <Input id="lossPct" value={form.lossPct}
+                                       inputMode="numeric"
+                                       className={errors.lossPct ? "border-red-500" : ""}
+                                       onChange={e => setForm({...form, lossPct: Number(e.target.value)})}
+                                       name="lossPct" />
+                                <ErrorText error={errors.lossPct} />
+                            </Field>
 
                         <Field>
                             <FieldLabel>Objective</FieldLabel>
@@ -246,7 +316,7 @@ export default function ClientsOptionsMenu({
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="Capital Growth">Capital Growth</SelectItem>
-                                    <SelectItem value="Balanced">Balanced</SelectItem>
+                                    <SelectItem value="Balance">Balance</SelectItem>
                                     <SelectItem value="Income">Income</SelectItem>
                                 </SelectContent>
                             </Select>
@@ -273,7 +343,13 @@ export default function ClientsOptionsMenu({
                                 <Button variant="outline">Cancel</Button>
                             </DialogClose>
 
-                            <Button type="button" onClick={() => setStep(2)}>
+                            <Button type="button" onClick={() => {
+                                setShowErrors(true)
+                                if (!hasErrors(validateStep1(form))) {
+                                    setShowErrors(false)
+                                    setStep(2)
+                                }
+                            }}>
                                 Next
                             </Button>
                         </DialogFooter>
@@ -340,7 +416,7 @@ export default function ClientsOptionsMenu({
                             </FieldGroup>
 
                             <DialogFooter>
-                                <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
+                                <Button type="button" variant="outline" onClick={() => setStep(1)}>Back</Button>
                                 <Button type="button" onClick={() => void handleCreate()}>Create</Button>
                             </DialogFooter>
                         </FieldSet>
