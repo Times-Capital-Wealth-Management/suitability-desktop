@@ -248,7 +248,7 @@ export function SuitabilityWorkspace() {
         capacityOfLoss: "",
         accountNumber: "",
         salutation: "",
-        objective: "Balance",
+        objective: "Capital Growth",
         risk: "High",
         trades: [
             {
@@ -672,8 +672,8 @@ export function SuitabilityWorkspace() {
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="Buy (Long Open)">Buy (Long Open)</SelectItem>
-                                                <SelectItem value="Sell (Short Close)">Sell (Short Close)</SelectItem>
-                                                <SelectItem value="Buy (Long Close)">Buy (Long Close)</SelectItem>
+                                                <SelectItem value="Buy (Short Close)">Buy (Short Close)</SelectItem>
+                                                <SelectItem value="Sell (Long Close)">Sell (Long Close)</SelectItem>
                                                 <SelectItem value="Sell (Short Open)">Sell (Short Open)</SelectItem>
                                             </SelectContent>
                                         </Select>
