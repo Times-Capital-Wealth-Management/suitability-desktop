@@ -171,37 +171,32 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                     ))}
                 </View>
 
-                {/*<View style={[styles.table]}>*/}
-                {/*    /!* Header row *!/*/}
-                {/*    <View style={styles.tableRow}>*/}
-                {/*        <View style={[styles.tableColHeader, {width: "20%"}, {borderRightWidth: 0}]}>*/}
-                {/*            <Text style={[styles.headerText]}>Number of Contracts</Text>*/}
-                {/*        </View>*/}
-                {/*        <View style={[styles.tableColHeader, {width: "50%"}, {borderLeftWidth: 0}, {borderRightWidth: 0}]}>*/}
-                {/*            <Text style={[styles.headerText]}>Instrument</Text>*/}
-                {/*        </View>*/}
-                {/*        <View style={[styles.tableColHeader, {width: "30%"}, {borderLeftWidth: 0}]}>*/}
-                {/*            <Text style={[styles.headerText]}>Entry Price</Text>*/}
-                {/*        </View>*/}
-                {/*    </View>*/}
-
-                {/*    /!* trade rows *!/*/}
-                {/*    {form.trades.map((t, i) => (*/}
-                {/*        <View key={i}>*/}
-                {/*            <View style={styles.tableRow}>*/}
-                {/*                <View style={[styles.tableCol, {width: "20%"}, {borderLeftWidth: 0}]}>*/}
-                {/*                    <Text style={[styles.cellText]}>{t.quantity}</Text>*/}
-                {/*                </View>*/}
-                {/*                <View style={[styles.tableCol, {width: "50%"}, {borderLeftWidth: 0}]}>*/}
-                {/*                    <Text style={[styles.cellText]}>{t.assetName}</Text>*/}
-                {/*                </View>*/}
-                {/*                <View style={[styles.tableCol, {width: "30%"}, {borderLeftWidth: 0}, {borderRightWidth: 0}]}>*/}
-                {/*                    <Text style={[styles.cellText]}>{t.entryPrice}</Text>*/}
-                {/*                </View>*/}
-                {/*            </View>*/}
-                {/*        </View>*/}
-                {/*    ))}*/}
-                {/*</View>*/}
+                {form.trades.some(trade => !trade.stopLoss) && (
+                    <View
+                        style={[
+                            styles.section,
+                            {
+                                borderWidth: 1.5,
+                                borderColor: "black",
+                                borderRadius: 4,
+                                marginTop: 10,
+                            },
+                        ]}
+                    >
+                        <Text
+                            style={{
+                                color: "red",
+                                fontWeight: "bold",
+                                fontSize: 12,
+                            }}
+                        >
+                            IMPORTANT: NO “STOP LOSS” WILL BE ATTACHED TO THIS ORDER AFTER
+                            EXECUTION. ONCE THE POSITION IS OPEN, A GUARANTEED STOP CANNOT BE ADDED.
+                            PLEASE CONTACT YOUR ADVISOR WITH ANY QUESTIONS OR IF YOU WISH TO ADD A
+                            STANDARD STOP LOSS.
+                        </Text>
+                    </View>
+                )}
 
                 <Text style={styles.section}>
                     Below summarises how the recommendation is suited to your individual circumstances.

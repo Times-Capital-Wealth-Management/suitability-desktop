@@ -49,6 +49,7 @@ type Trade = {
     quantity: string;
     entryPrice: string;
     limit: string;
+    stopLoss: boolean;
     timeOfTrade: string;
     dateOfTrade: string;
     adviceChannel: "Phone" | "E-mail";
@@ -259,6 +260,7 @@ export function SuitabilityWorkspace() {
                 quantity: "",
                 entryPrice: "",
                 limit: "",
+                stopLoss: false,
                 timeOfTrade: "",
                 dateOfTrade: today,
                 adviceChannel: "Phone",
@@ -362,6 +364,7 @@ export function SuitabilityWorkspace() {
             quantity: "",
             entryPrice: "",
             limit: "",
+            stopLoss: false,
             timeOfTrade: form.trades[0].timeOfTrade,
             dateOfTrade: form.trades[0].dateOfTrade,
             adviceChannel: "Phone",
@@ -767,6 +770,21 @@ export function SuitabilityWorkspace() {
                                         {showErrors && <FieldError error={errors.trades[abs]?.limit} />}
                                     </div>
 
+                                    <div className="flex items-center space-x-2 mt-3">
+                                        <Label htmlFor={`stopLoss-${abs}`}>Stop Loss?</Label>
+                                        <input
+                                            type="checkbox"
+                                            id={`stopLoss-${abs}`}
+                                            checked={t.stopLoss}
+                                            onChange={(e) =>
+                                                updateTrade(abs, (old) => ({
+                                                    ...old,
+                                                    stopLoss: e.target.checked,
+                                                }))
+                                            }
+                                            className="h-4 w-4"
+                                        />
+                                    </div>
 
                                     <div className="space-y-1.5">
                                         <Label>Date of Initial Advice</Label>
