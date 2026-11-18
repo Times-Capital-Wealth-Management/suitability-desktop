@@ -227,7 +227,8 @@ export default function ClientsOptionsMenu({
                     <DialogHeader className="mb-3">
                         <DialogTitle>Add Client</DialogTitle>
                         <DialogDescription>
-                           Please provide the following details of the client you wish to add. (Fields with * are required.)
+                           Please provide the following details of the client you wish to add. (Fields with <Required /> are
+                            required.)
                         </DialogDescription>
                     </DialogHeader>
 
