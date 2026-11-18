@@ -1,7 +1,7 @@
 import type { Client } from "@/lib/database"
 
 export const ACCOUNT_TYPES = [
-    "ISA", "GIA", "CFD", "Spread Bet", "JISA", "SIPP", "Corporate",
+    "CFD", "Spread Bet",
 ] as const
 
 export type ClientForm = {
@@ -30,7 +30,7 @@ export const EMPTY_FORM: ClientForm = {
     investmentManager: "",
     platform: "",
     knowledgeExperience: "Medium",
-    lossPct: 0,
+    lossPct: 100,
     accountNumber: "",
     typeAccount: "",
     salutation: "",
