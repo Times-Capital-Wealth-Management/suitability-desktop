@@ -224,10 +224,10 @@ export default function ClientsOptionsMenu({
             }}>
                 <DialogContent className="sm:max-w-[425px]">
                     <form autoComplete="off">
-                    <DialogHeader>
+                    <DialogHeader className="mb-3">
                         <DialogTitle>Add Client</DialogTitle>
                         <DialogDescription>
-                           Please provide the following details of the client you wish to add.
+                           Please provide the following details of the client you wish to add. (Fields with * are required.)
                         </DialogDescription>
                     </DialogHeader>
 
