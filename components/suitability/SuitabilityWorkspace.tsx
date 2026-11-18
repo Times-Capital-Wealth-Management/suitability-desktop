@@ -42,7 +42,7 @@ import { ChevronsUpDown} from "lucide-react";
 
 type Trade = {
     assetName: string;
-    accountType: "ISA" | "GIA";
+    accountType: "ISA" | "GIA" | "CFD" | "Spread Bet" | "JISA" | "Corporate" | "SIPP";
     assetType: "Equity" | "CFD/SB";
     assetRisk: "Low" | "Medium" | "High";
     side: "Buy" | "Sell" | "Invest" | "Raise";
@@ -316,6 +316,10 @@ export function SuitabilityWorkspace() {
                         //c.salutation ?? s.salutation,
                     objective: normalizedObjective as "Balance" | "Capital Growth" | "Income",
                     risk: (c.risk as any) ?? s.risk,
+                    trades: s.trades.map((t) => ({
+                        ...t,
+                        accountType: (c.typeAccount as Trade["accountType"]) ?? t.accountType,
+                    })),
                 }));
             })
             .catch((err) => console.error("Failed to load client details", err));
@@ -591,33 +595,33 @@ export function SuitabilityWorkspace() {
                                         {showErrors && <FieldError error={errors.trades[abs]?.assetName} />}
                                     </div>
 
-                                    {/* Radio buttons for the account type */}
-                                    <div className="space-y-1.5">
-                                        <Label>Account Type</Label>
-                                        <RadioGroup
-                                            value={t.accountType}
-                                            disabled={form.platform !== "AJ Bell"}
-                                            onValueChange={(v: any) =>
-                                                updateTrade(abs, (old) => ({
-                                                    ...old,
-                                                    accountType: v,
-                                                }))
-                                            }
-                                        >
-                                            <div className="flex items-center space-x-1.5">
-                                                <RadioGroupItem className="bg-input" value="ISA">
-                                                    ISA
-                                                </RadioGroupItem>
-                                                <Label>ISA</Label>
-                                            </div>
-                                            <div className="flex items-center space-x-1.5">
-                                                <RadioGroupItem className="bg-input" value="GIA">
-                                                    GIA
-                                                </RadioGroupItem>
-                                                <Label>GIA</Label>
-                                            </div>
-                                        </RadioGroup>
-                                    </div>
+                                    {/*/!* Radio buttons for the account type *!/*/}
+                                    {/*<div className="space-y-1.5">*/}
+                                    {/*    <Label>Account Type</Label>*/}
+                                    {/*    <RadioGroup*/}
+                                    {/*        value={t.accountType}*/}
+                                    {/*        disabled={form.platform !== "AJ Bell"}*/}
+                                    {/*        onValueChange={(v: any) =>*/}
+                                    {/*            updateTrade(abs, (old) => ({*/}
+                                    {/*                ...old,*/}
+                                    {/*                accountType: v,*/}
+                                    {/*            }))*/}
+                                    {/*        }*/}
+                                    {/*    >*/}
+                                    {/*        <div className="flex items-center space-x-1.5">*/}
+                                    {/*            <RadioGroupItem className="bg-input" value="ISA">*/}
+                                    {/*                ISA*/}
+                                    {/*            </RadioGroupItem>*/}
+                                    {/*            <Label>ISA</Label>*/}
+                                    {/*        </div>*/}
+                                    {/*        <div className="flex items-center space-x-1.5">*/}
+                                    {/*            <RadioGroupItem className="bg-input" value="GIA">*/}
+                                    {/*                GIA*/}
+                                    {/*            </RadioGroupItem>*/}
+                                    {/*            <Label>GIA</Label>*/}
+                                    {/*        </div>*/}
+                                    {/*    </RadioGroup>*/}
+                                    {/*</div>*/}
 
                                     <div className="space-y-1.5">
                                         <Label>Asset Type</Label>
