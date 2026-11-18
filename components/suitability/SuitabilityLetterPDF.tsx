@@ -190,7 +190,7 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                                 fontSize: 12,
                             }}
                         >
-                            IMPORTANT: NO “STOP LOSS” WILL BE ATTACHED TO THIS ORDER AFTER
+                            <Text style={{color: "black"}}>IMPORTANT:</Text> NO “STOP LOSS” WILL BE ATTACHED TO THIS ORDER AFTER
                             EXECUTION. ONCE THE POSITION IS OPEN, A GUARANTEED STOP CANNOT BE ADDED.
                             PLEASE CONTACT YOUR ADVISOR WITH ANY QUESTIONS OR IF YOU WISH TO ADD A
                             STANDARD STOP LOSS.
@@ -218,7 +218,7 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                             <Text style={styles.section}><Text style={{ fontWeight: "bold"}}>{t.assetName}</Text> is classified as a high-risk investment. </Text>
                             <Text style={styles.section}>
                                 Therefore, with consideration to your overall risk profile and
-                                investment objectives, we believe it is suitable for you for the following reasons:
+                                investment objectives, we believe it is suitable for the following reasons:
                             </Text>
                             {t.reasons.filter(Boolean).length ? (
                                 t.reasons.map((r, idx) =>
@@ -330,13 +330,12 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
 // Generate filename: "ClientName - Purchase of StockName 16-12-2025.pdf"
 function generateFileName(form: SuitabilityFormState): string {
     const clientName = form.clientName || "Client";
-    //const stockNames = form.trades.map(t => t.assetName).filter(Boolean).join(", ") || "Stock";
-    //const date = new Date().toLocaleDateString("en-GB").replace(/\//g, "-"); // 16-12-2025
+    const stockNames = form.trades.map(t => t.assetName).filter(Boolean).join(", ") || "Stock";
     const date = form.trades[0].dateOfTrade.replace(/\//g, "-");
 
     // Clean up any invalid filename characters
      // Remove invalid chars
-    return `${clientName} - ${form.trades[0].accountType} Suitability ${date}.pdf`
+    return `${clientName} ${stockNames} - ${form.trades[0].accountType} Suitability ${date}.pdf`
         .replace(/[<>:"/\\|?*]/g, "");
 }
 
