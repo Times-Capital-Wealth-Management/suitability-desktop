@@ -13,13 +13,14 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import {User, Mail, Home, Hash, Phone, CalendarClock, BadgePercent, Scale} from "lucide-react";
+import {User, Mail, Home, Hash, Phone, CalendarClock, BadgePercent, Scale, Hand} from "lucide-react";
 import { useClient } from "@/hooks/use-tauri";
 
 type Client = {
   id: string;
   firstName: string;
   lastName: string;
+  salutation: string;
   accountNumber: string;
   email?: string | null;
   address?: string | null;
@@ -55,8 +56,8 @@ export default function ClientDetailsSheet({
             <Skeleton className="h-4 w-1/2" />
           </div>
         ) : client ? (
-          <div className="mx-auto w-full max-w-md p-4">
-            <div className="rounded-2xl border bg-card text-card-foreground shadow-sm overflow-hidden">
+          <div className="mx-auto w-full max-w-md p-4 overflow-scroll">
+            <div className="rounded-2xl border bg-card text-card-foreground shadow-sm ">
               <dl className="divide-y">
                 {/* Name */}
                 <div className="flex items-center gap-3 px-4 py-3 bg-muted/30">
@@ -159,6 +160,19 @@ export default function ClientDetailsSheet({
                     </dt>
                     <dd className="text-sm font-medium">
                       {client.feesCommissionRate ?? "N/A"}
+                    </dd>
+                  </div>
+                </div>
+
+                {/* Fees/Commission Rate */}
+                <div className="flex items-center gap-3 px-4 py-3 bg-muted/30">
+                  <Hand className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <dt className="text-xs uppercase text-muted-foreground">
+                      Salutation
+                    </dt>
+                    <dd className="text-sm font-medium">
+                      {client.salutation ?? client.firstName}
                     </dd>
                   </div>
                 </div>
