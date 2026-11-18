@@ -1,7 +1,6 @@
 "use client";
 
 import { useTauri, useAppVersion } from "@/hooks/use-tauri";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import { BarChart, FileText, BookUser, Settings } from "lucide-react";
@@ -21,7 +20,7 @@ export default function Home() {
           Wealth Management Platform
           {!isLoading && (
             <span className="ml-2 text-xs">
-              {isDesktop ? "📦 Desktop App" : "🌐 Web App"}
+              🍎 MacOS Version
               {appVersion && ` v${appVersion}`}
             </span>
           )}
@@ -100,8 +99,9 @@ export default function Home() {
         <Card className="p-6 bg-primary/5 border-primary/20">
           <h3 className="font-semibold mb-2">Latest Updates</h3>
           <ul className="text-sm text-muted-foreground space-y-1">
-            <li>✓ Mac support, including CSV import and client deletion</li>
-            <li>✓ Success and error messages now show as notifications</li>
+            <li>✓ Mac support</li>
+            <li>✓ Tailored for CFD and Spread Bet trades</li>
+            <li>✓ Add, edit and delete clients directly in the app</li>
           </ul>
         </Card>
       )}
