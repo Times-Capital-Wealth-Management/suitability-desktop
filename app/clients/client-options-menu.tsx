@@ -57,6 +57,8 @@ type ClientErrors = {
     investmentManager: FieldError
     platform: FieldError
     lossPct: FieldError
+    objective: FieldError
+    risk: FieldError
 }
 
 const emptyClientErrors: ClientErrors = {
@@ -67,6 +69,8 @@ const emptyClientErrors: ClientErrors = {
     investmentManager: null,
     platform: null,
     lossPct: null,
+    objective: null,
+    risk: null,
 }
 
 function validateStep1(form: ClientForm): ClientErrors {
@@ -85,6 +89,9 @@ function validateStep1(form: ClientForm): ClientErrors {
         errors.lossPct = "Capacity of loss must be 100% for CFD"
     }
 
+    if(!form.objective) errors.objective = "Objective is required"
+    if(!form.risk) errors.risk = "Risk is required"
+
     return errors
 }
 
@@ -95,6 +102,10 @@ function hasErrors(errors: ClientErrors): boolean {
 function ErrorText({ error }: { error: FieldError }) {
     if (!error) return null
     return <p className="text-xs text-red-500">{error}</p>
+}
+
+function Required() {
+    return <span className="text-red-500" aria-hidden="true"> *</span>
 }
 
 
@@ -114,8 +125,8 @@ export default function ClientsOptionsMenu({
         accountNumber: "",
         typeAccount: "",
         salutation: "",
-        objective: "Balance",
-        risk: "Medium",
+        objective: "",
+        risk: "",
         email: "",
         phone: "",
         address: "",
@@ -224,34 +235,31 @@ export default function ClientsOptionsMenu({
                     <FieldSet>
                         <FieldGroup className="grid grid-cols-2 gap-4 pb-3">
                             <Field>
-                                <FieldLabel htmlFor="firstname">First Name</FieldLabel>
+                                <FieldLabel htmlFor="firstname">First Name<Required /></FieldLabel>
                                 <Input id="firstname" value={form.firstName}
                                        className={errors.firstName ? "border-red-500" : ""}
                                        onChange={e => setForm({...form, firstName: e.target.value})}
                                        name="firstname" />
-                                <ErrorText error={errors.firstName} />
                             </Field>
 
                             <Field>
-                                <FieldLabel htmlFor="surname">Last Name</FieldLabel>
+                                <FieldLabel htmlFor="surname">Last Name<Required /></FieldLabel>
                                 <Input id="surname" value={form.lastName}
                                        className={errors.lastName ? "border-red-500" : ""}
                                        onChange={e => setForm({...form, lastName: e.target.value})}
                                        name="surname" />
-                                <ErrorText error={errors.lastName} />
                             </Field>
 
                             <Field>
-                                <FieldLabel htmlFor="accNum">Account Number</FieldLabel>
+                                <FieldLabel htmlFor="accNum">Account Number<Required /></FieldLabel>
                                 <Input id="accNum" value={form.accountNumber}
                                        className={errors.accountNumber ? "border-red-500" : ""}
                                        onChange={e => setForm({...form, accountNumber: e.target.value})}
                                        name="accNum" />
-                                <ErrorText error={errors.accountNumber} />
                             </Field>
 
                             <Field>
-                                <FieldLabel>Account Type</FieldLabel>
+                                <FieldLabel>Account Type<Required /></FieldLabel>
                                 <Select value={form.typeAccount}
                                         onValueChange={value => setForm({
                                             ...form,
@@ -270,20 +278,18 @@ export default function ClientsOptionsMenu({
                                         <SelectItem value="Corporate">Corporate</SelectItem>
                                     </SelectContent>
                                 </Select>
-                                <ErrorText error={errors.typeAccount} />
                             </Field>
 
                             <Field>
-                                <FieldLabel htmlFor="investmanager">Investment Manager</FieldLabel>
+                                <FieldLabel htmlFor="investmanager">Investment Manager <Required /></FieldLabel>
                                 <Input id="investmanager" value={form.investmentManager}
                                        className={errors.investmentManager ? "border-red-500" : ""}
                                        onChange={e => setForm({...form, investmentManager: e.target.value})}
                                        name="investmanager" />
-                                <ErrorText error={errors.investmentManager} />
                             </Field>
 
                             <Field>
-                                <FieldLabel>Investment Platform</FieldLabel>
+                                <FieldLabel>Investment Platform<Required /></FieldLabel>
                                 <Select value={form.platform}
                                         onValueChange={value => setForm({...form, platform: value})}>
                                     <SelectTrigger className={errors.platform ? "border-red-500" : ""}>
@@ -294,11 +300,10 @@ export default function ClientsOptionsMenu({
                                         <SelectItem value="Spreadex">Spreadex</SelectItem>
                                     </SelectContent>
                                 </Select>
-                                <ErrorText error={errors.platform} />
                             </Field>
 
                             <Field>
-                                <FieldLabel htmlFor="lossPct">Capacity of Loss</FieldLabel>
+                                <FieldLabel htmlFor="lossPct">Capacity of Loss<Required /></FieldLabel>
                                 <Input id="lossPct" value={form.lossPct}
                                        inputMode="numeric"
                                        className={errors.lossPct ? "border-red-500" : ""}
@@ -308,10 +313,10 @@ export default function ClientsOptionsMenu({
                             </Field>
 
                         <Field>
-                            <FieldLabel>Objective</FieldLabel>
+                            <FieldLabel>Objective<Required /></FieldLabel>
                             <Select value={form.objective}
                                     onValueChange={value => setForm({...form, objective: value})}>
-                                <SelectTrigger>
+                                <SelectTrigger className={errors.objective ? "border-red-500" : ""}>
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -323,10 +328,10 @@ export default function ClientsOptionsMenu({
                         </Field>
 
                         <Field>
-                            <FieldLabel>Risk</FieldLabel>
+                            <FieldLabel>Risk<Required /></FieldLabel>
                             <Select value={form.risk}
                                     onValueChange={value => setForm({...form, risk: value})}>
-                                <SelectTrigger>
+                                <SelectTrigger className={errors.risk ? "border-red-500" : ""}>
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
