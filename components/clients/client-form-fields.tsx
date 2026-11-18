@@ -130,8 +130,8 @@ export default function ClientFormFields({
                             <SelectValue placeholder="Select" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="AJ Bell">AJ Bell</SelectItem>
                             <SelectItem value="Spreadex">Spreadex</SelectItem>
+                            <SelectItem value="StoneX">StoneX</SelectItem>
                         </SelectContent>
                     </Select>
                 </Field>
