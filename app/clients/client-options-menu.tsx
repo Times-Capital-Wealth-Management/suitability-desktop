@@ -252,6 +252,13 @@ export default function ClientsOptionsMenu({
                             </Field>
 
                             <Field>
+                                <FieldLabel htmlFor="salutation">Salutation</FieldLabel>
+                                <Input id="salutation" value={form.salutation}
+                                       onChange={e => setForm({...form, salutation: e.target.value})}
+                                       name="salutation" />
+                            </Field>
+
+                            <Field>
                                 <FieldLabel htmlFor="accNum">Account Number<Required /></FieldLabel>
                                 <Input id="accNum" value={form.accountNumber}
                                        className={errors.accountNumber ? "border-red-500" : ""}
