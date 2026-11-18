@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import {EllipsisVertical} from "lucide-react"
+import {ChevronDown} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -10,7 +10,6 @@ import {
     DialogContent,
     DialogDescription,
     DialogFooter,
-    DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
 import {
@@ -49,7 +48,7 @@ export default function ClientsOptionsMenu({
             <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" aria-label="Open menu">
-                        <EllipsisVertical />
+                        Actions <ChevronDown/>
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-40" align="end">
