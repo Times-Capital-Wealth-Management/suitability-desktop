@@ -4,8 +4,9 @@ import {Document, Image, Page, pdf, StyleSheet, Text, View} from '@react-pdf/ren
 import type {SuitabilityFormState} from "./SuitabilityWorkspace";
 import {registerPDFFonts} from '@/lib/fontsPDF';
 import {isTauri} from "@/lib/tauri";
-import {Loader2} from "lucide-react";
+import {Loader2, TriangleAlert} from "lucide-react";
 import {Button} from "@/components/ui/button";
+import {toast} from "sonner";
 
 const styles = StyleSheet.create({
     page:{
@@ -107,6 +108,48 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     }
 });
+
+function confirmReplace(fileName: string): Promise<boolean> {
+    return new Promise((resolve) => {
+        toast.custom(
+            (id) => (
+                <div className="w-full rounded-lg border bg-popover p-4 text-popover-foreground shadow-lg">
+                    <div className="flex items-start gap-3">
+                        <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0" />
+                        <div className="min-w-0">
+                            <p className="text-sm font-medium">File already exists</p>
+                            <p className="mt-1 break-words text-sm text-muted-foreground">
+                                "{fileName}" already exists. Do you want to replace it?
+                            </p>
+                        </div>
+                    </div>
+                    <div className="mt-4 flex justify-end gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                                resolve(false);
+                                toast.dismiss(id);
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            size="sm"
+                            onClick={() => {
+                                resolve(true);
+                                toast.dismiss(id);
+                            }}
+                        >
+                            Replace
+                        </Button>
+                    </div>
+                </div>
+            ),
+            {duration: Infinity, onDismiss: () => resolve(false)}
+        );
+    });
+}
 
 
 // The actual PDF Document component
@@ -368,7 +411,7 @@ export default function SuitabilityLetterPDF({ form, onBeforeSave }: Suitability
             if (isTauri()) {
                 // Tauri: Save to Documents/Suitability folder using BaseDirectory
                 const { writeFile, mkdir, exists, BaseDirectory } = await import("@tauri-apps/plugin-fs");
-                const { message, ask } = await import("@tauri-apps/plugin-dialog");
+                const { message } = await import("@tauri-apps/plugin-dialog");
                 const { join, documentDir } = await import("@tauri-apps/api/path");
 
                 const folderName = "Suitability";
@@ -384,20 +427,8 @@ export default function SuitabilityLetterPDF({ form, onBeforeSave }: Suitability
                 const fileExists = await exists(relativePath, { baseDir: BaseDirectory.Document });
 
                 if (fileExists) {
-                    const shouldReplace = await ask(
-                        `A file named "${fileName}" already exists.\n\nDo you want to replace it?`,
-                        {
-                            title: "File Already Exists",
-                            kind: "warning",
-                            okLabel: "Replace",
-                            cancelLabel: "Cancel"
-                        }
-                    );
-
-                    if (!shouldReplace) {
-                        setLoading(false);
-                        return; // User cancelled, don't save
-                    }
+                    const shouldReplace = await confirmReplace(fileName);
+                    if (!shouldReplace) return; // finally resets loading
                 }
 
                 const buffer = await blob.arrayBuffer();
