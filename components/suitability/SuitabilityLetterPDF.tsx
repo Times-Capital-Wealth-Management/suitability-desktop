@@ -111,12 +111,11 @@ const styles = StyleSheet.create({
 
 // The actual PDF Document component
 function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
-    const recommendation = form.trades.length > 0 ? form.trades[0].side : "—";
-    const quantityOrAmount = form.trades[0]?.side === "Sell" || form.trades[0]?.side === "Buy" ? "Quantity" : "Amount";
     const tradeTime = form.trades.length > 0 ? form.trades[0].timeOfTrade : "—";
     const tradeDate = form.trades.length > 0 ? form.trades[0].dateOfTrade : "—";
     const dateNow = new Date().toLocaleDateString("en-GB");
     const timeNow = new Date().toLocaleTimeString("en-GB", {hour: "2-digit", minute: "2-digit"});
+    const limitValue = Number(form.trades.map(trade => trade.limit))
 
     return (
         <Document>
@@ -134,71 +133,101 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                     any areas further, please do not hesitate to contact us.
                 </Text>
 
-                <Text style={[styles.section, {fontWeight:'bold'}, {marginBottom: 3}, {fontSize: 14}]}>
-                    Recommendation - {recommendation}
-                </Text>
-
-                <View style={[styles.table]}>
-                    {/* Header row */}
-                    <View style={styles.tableRow}>
-                        <View style={[styles.tableColHeader, {width: "63%"}, {borderRightWidth: 0}]}>
-                            <Text style={[styles.headerText]}>{form.platform === "Spreadex" ? "Name" : "Shares"}</Text>
-                        </View>
-                        <View style={[styles.tableColHeader, {width: "20%"}, {borderLeftWidth: 0}, {borderRightWidth: 0}]}>
-                            <Text style={[styles.headerText]}>{quantityOrAmount}</Text>
-                        </View>
-                        <View style={[styles.tableColHeader, {width: "17%"}, {borderLeftWidth: 0}]}>
-                            <Text style={[styles.headerText]}>Account</Text>
-                        </View>
-                    </View>
-
-                    {/* trade rows */}
-                    {form.trades.map((t, i) => (
-                        <View key={i}>
-                            <View style={styles.tableRow}>
-                                <View style={[styles.tableCol, {width: "63%"}, {borderLeftWidth: 0}]}>
-                                    <Text style={[styles.cellText]}>{t.assetName}</Text>
-                                </View>
-                                <View style={[styles.tableCol, {width: "20%"}, {borderLeftWidth: 0}]}>
-                                    <Text style={[styles.cellText]}>{t.quantity}</Text>
-                                </View>
-                                <View style={[styles.tableCol, {width: "17%"}, {borderLeftWidth: 0}, {borderRightWidth: 0}]}>
-                                    <Text style={[styles.cellText]}>{form.platform === "Spreadex" ? "Spreadbet" : t.accountType}</Text>
-                                </View>
-                            </View>
-                        </View>
-                    ))}
-                </View>
-
                 <Text style={styles.section}>
                     Dear {form.salutation},
                 </Text>
 
+                {/*<Text style={[styles.section, {fontWeight:'bold'}, {marginBottom: 3}, {fontSize: 14}]}>*/}
+                {/*    Recommendation -*/}
+                {/*    {form.trades.map((t, i) => (*/}
+                {/*        <Text key={i}>*/}
+                {/*            {t.side} {t.quantity} {t.assetName} @ {t.entryPrice}*/}
+                {/*        </Text>*/}
+                {/*    ))}*/}
+                {/*</Text>*/}
+
+                <View style={{ marginTop: 8 }}>
+                    {form.trades.map((t, i) => (
+                        <Text
+                            key={i}
+                            style={[
+                                styles.list,
+                                { marginTop: i === 0 ? 0 : 4 },
+                                { fontFamily: "Helvetica-Bold" },
+                                { fontSize: "14px" }
+                            ]}
+                        >
+                            {i === 0 && <Text>Recommendation – </Text>}
+                            {t.side} {t.quantity}{" "}
+                            <Text>{t.assetName}</Text>
+                            {" "}@ {t.entryPrice}
+
+                            {limitValue !== 0 && (
+                                <Text>
+                                    {" "}({t.limit} limit to exit Good-Till-Cancelled Order (GTC))
+                                </Text>
+                            )}
+                        </Text>
+                    ))}
+                </View>
+
+                {/*<View style={[styles.table]}>*/}
+                {/*    /!* Header row *!/*/}
+                {/*    <View style={styles.tableRow}>*/}
+                {/*        <View style={[styles.tableColHeader, {width: "20%"}, {borderRightWidth: 0}]}>*/}
+                {/*            <Text style={[styles.headerText]}>Number of Contracts</Text>*/}
+                {/*        </View>*/}
+                {/*        <View style={[styles.tableColHeader, {width: "50%"}, {borderLeftWidth: 0}, {borderRightWidth: 0}]}>*/}
+                {/*            <Text style={[styles.headerText]}>Instrument</Text>*/}
+                {/*        </View>*/}
+                {/*        <View style={[styles.tableColHeader, {width: "30%"}, {borderLeftWidth: 0}]}>*/}
+                {/*            <Text style={[styles.headerText]}>Entry Price</Text>*/}
+                {/*        </View>*/}
+                {/*    </View>*/}
+
+                {/*    /!* trade rows *!/*/}
+                {/*    {form.trades.map((t, i) => (*/}
+                {/*        <View key={i}>*/}
+                {/*            <View style={styles.tableRow}>*/}
+                {/*                <View style={[styles.tableCol, {width: "20%"}, {borderLeftWidth: 0}]}>*/}
+                {/*                    <Text style={[styles.cellText]}>{t.quantity}</Text>*/}
+                {/*                </View>*/}
+                {/*                <View style={[styles.tableCol, {width: "50%"}, {borderLeftWidth: 0}]}>*/}
+                {/*                    <Text style={[styles.cellText]}>{t.assetName}</Text>*/}
+                {/*                </View>*/}
+                {/*                <View style={[styles.tableCol, {width: "30%"}, {borderLeftWidth: 0}, {borderRightWidth: 0}]}>*/}
+                {/*                    <Text style={[styles.cellText]}>{t.entryPrice}</Text>*/}
+                {/*                </View>*/}
+                {/*            </View>*/}
+                {/*        </View>*/}
+                {/*    ))}*/}
+                {/*</View>*/}
+
                 <Text style={styles.section}>
-                    Vinco Wealth Management has recommended you <Text style={{ fontWeight: "bold"}}>{recommendation.toLowerCase()}</Text> the above {form.platform === "Spreadex" ? "companies via Spreadbet" : "shares"}.
                     Below summarises how the recommendation is suited to your individual circumstances.
                 </Text>
 
                 <Text style={styles.subtitle}>
                     Your Investment Objectives and Risk Tolerance
                 </Text>
-                <Text style={styles.section}>
+                <Text style={[styles.list, {marginBottom: 5}, {marginTop: 10}]}>
                     Your objective is to seek returns in the form of both income and capital appreciation ({form.objective}).
+                </Text>
+                <Text style={[styles.list, {marginTop: 0}]}>
                     Your tolerance to risk is deemed <Text style={{ fontWeight: "bold"}}>{form.risk.toLowerCase()}</Text> and your capacity for loss is <Text style={{ fontWeight: "bold"}}>{form.capacityOfLoss}</Text> of the total portfolio.
                 </Text>
 
                 <View>
                     {form.trades.map((t, i) => (
                         <View key={i}>
-                            <Text style={styles.section}>{t.assetName} would be classified as a <Text style={{ fontWeight: "bold"}}>{t.assetRisk.toLowerCase()}-risk</Text> investment
-                                and with consideration to your overall risk profile and
-                                investment objectives. We believe as part of your overall
-                                portfolio it is suitable for you to <Text style={{ fontWeight: "bold"}}>{t.side.toLowerCase()}</Text> because of the
-                                following reasons:
+                            <Text style={styles.section}><Text style={{ fontWeight: "bold"}}>{t.assetName}</Text> is classified as a high-risk investment. </Text>
+                            <Text style={styles.section}>
+                                Therefore, with consideration to your overall risk profile and
+                                investment objectives, we believe it is suitable for you for the following reasons:
                             </Text>
                             {t.reasons.filter(Boolean).length ? (
                                 t.reasons.map((r, idx) =>
-                                    <Text key={idx} style={styles.list}>• {r}</Text>)
+                                    <Text key={idx} style={styles.list}>- {r}</Text>)
                             ) : (
                                 <Text style={styles.section}>No reasons provided for this trade.</Text>
                             )}
@@ -211,14 +240,14 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 </Text>
                 <Text style={styles.section}>
                     The recommendation is considered to suit your relevant knowledge and experience as the
-                    firm has assessed you to have a good understanding of {form.platform === "Spreadex" ? "equities and derivatives" : "equities"}.
+                    firm has assessed you to have a good understanding of CFDs.
                 </Text>
 
                 <Text style={[styles.subtitle]}>
                     Periodic Review of Suitability
                 </Text>
                 <Text style={styles.section}>
-                    Investing in {form.platform === "Spreadex" ? "equities and derivatives" : "equities"} will require us to perform periodic reviews to assess your
+                    Investing in CFDs will require us to perform periodic reviews to assess your
                     continued suitability to the product. By following this advice and opening / closing the
                     recommended instrument, you will be agreeing to the following conditions:
                 </Text>
@@ -249,6 +278,31 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                     recommendation will be communicated to you by e-mail.
                 </Text>
 
+                {/* This is the template for the reminder segment that the cfd letter needs */}
+                <Text style={[styles.subtitle]}>
+                    Reminder of Margin Rules and Risks
+                </Text>
+
+                <Text style={[styles.list, {marginBottom: 5}, {marginTop: 10}]}>
+                    <Text style={{fontWeight:'bold'}}>
+                        Trading CFDs involves significant leverage, which can greatly amplify potential losses. Adverse
+                        market movements may quickly lead to substantial capital depletion. It's essential to understand
+                        that commissions and finance charges are based on the total leveraged exposure, not just the initial
+                        margin requirement.
+                    </Text>
+                </Text>
+
+                <Text style={[styles.list, {marginTop: 0}]}>
+                    <Text  style={{fontWeight:'bold'}}>
+                        If your account's Margin Level falls to or below the Margin Close Out Level, the platform provider
+                        may close any or all open positions immediately, with or without notice. This is crucial for
+                        maintaining compliance with margin requirements and protecting all parties from significant
+                        losses.
+                    </Text>
+                </Text>
+                {/* This is the template for the reminder segment that the cfd letter needs that ENDS HERE */}
+
+
                 <Text style={styles.section}>
                     <Text style={{fontWeight:'bold'}}>Declaration:</Text> It is strongly advised that you read
                     all the information set out in this report for your own benefit and protection. If you do
@@ -257,11 +311,11 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 </Text>
 
                 <Text style={styles.section}>
-                    Date of trade instruction: {tradeDate}       Time of trade instruction: {tradeTime}
+                    Date of initial advice: {tradeDate}       Time: {tradeTime}  ({form.trades[0].adviceChannel})
                 </Text>
 
                 <Text style={styles.section}>
-                    Date of suitability report: {dateNow}       Time of suitability report: {timeNow}
+                    Date of suitability report: {dateNow}       Time: {timeNow}
                 </Text>
 
                 <Text style={styles.section}>
@@ -281,21 +335,13 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
 // Generate filename: "ClientName - Purchase of StockName 16-12-2025.pdf"
 function generateFileName(form: SuitabilityFormState): string {
     const clientName = form.clientName || "Client";
-    let titlePdf;
-    if(form.trades[0]?.side === "Raise"){
-        titlePdf = "Raise"
-    } else if (form.trades[0]?.side === "Sell"){
-       titlePdf = "Sale"
-    } else{
-       titlePdf = "Purchase"
-    }
-    const stockNames = form.trades.map(t => t.assetName).filter(Boolean).join(", ") || "Stock";
+    //const stockNames = form.trades.map(t => t.assetName).filter(Boolean).join(", ") || "Stock";
     //const date = new Date().toLocaleDateString("en-GB").replace(/\//g, "-"); // 16-12-2025
     const date = form.trades[0].dateOfTrade.replace(/\//g, "-");
 
     // Clean up any invalid filename characters
      // Remove invalid chars
-    return `${clientName} - ${titlePdf} of ${stockNames} ${date}.pdf`
+    return `${clientName} - ${form.trades[0].accountType} Suitability ${date}.pdf`
         .replace(/[<>:"/\\|?*]/g, "");
 }
 

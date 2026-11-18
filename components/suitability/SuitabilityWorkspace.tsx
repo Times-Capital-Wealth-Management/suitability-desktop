@@ -42,13 +42,16 @@ import { ChevronsUpDown} from "lucide-react";
 
 type Trade = {
     assetName: string;
-    accountType: "ISA" | "GIA" | "CFD" | "Spread Bet" | "JISA" | "Corporate" | "SIPP";
-    assetType: "Equity" | "CFD/SB";
+    accountType: "CFD" | "Spread Bet";
+    assetType: "CFD" | "Spread Bet";
     assetRisk: "Low" | "Medium" | "High";
-    side: "Buy" | "Sell" | "Invest" | "Raise";
+    side: "Buy (Long Open)" | "Buy (Short Close)" | "Sell (Long Close)" | "Sell (Short Open)";
     quantity: string;
+    entryPrice: string;
+    limit: string;
     timeOfTrade: string;
     dateOfTrade: string;
+    adviceChannel: "Phone" | "E-mail";
     reasons: [string, string, string];
 };
 
@@ -56,7 +59,7 @@ export type SuitabilityFormState = {
     clientId: string | null;
     clientName: string;
     investmentManager: string;
-    platform: "AJ Bell" | "Spreadex";
+    platform: "Spreadex" | "StoneX";
     knowledgeExperience: "Low" | "Medium" | "High";
     capacityOfLoss: string;
     accountNumber: string;
@@ -81,6 +84,8 @@ type ClientErrors = {
 type TradeErrors = {
     assetName: FieldError;
     quantity: FieldError;
+    entryPrice: FieldError;
+    limit: FieldError;
     dateOfTrade: FieldError;
     timeOfTrade: FieldError;
     reasons: FieldError;
@@ -102,6 +107,8 @@ const emptyClientErrors: ClientErrors = {
 const emptyTradeErrors: TradeErrors = {
     assetName: null,
     quantity: null,
+    entryPrice: null,
+    limit: null,
     dateOfTrade: null,
     timeOfTrade: null,
     reasons: null,
@@ -144,11 +151,23 @@ function validateTrade(trade: Trade): TradeErrors {
     }
 
     if (!trade.quantity.trim()) {
-        errors.quantity = "Quantity/Amount is required";
-    }else if (trade.side === "Sell" && /^Sell All$/i.test(trade.quantity.trim().replace(/[£$€]/g, ""))){
+        errors.quantity = "Number of Contracts is required";
+    }else if (trade.side === "Sell (Short Open)" && /^Sell All$/i.test(trade.quantity.trim().replace(/[£$€]/g, ""))){
     //if it sees the trade as a sell and quantity is Sell All, allow it through
     } else if (!/^([\d,]+(\.\d+)?)$/.test(trade.quantity.trim().replace(/[£$€]/g, ""))) {
-        errors.quantity = trade.side === "Sell" ? "Must be a valid number or 'Sell All'" : "Must be a valid number";
+        errors.quantity =  (trade.side === "Sell (Short Open)" || trade.side === "Sell (Long Close)") ? "Must be a valid number or 'Sell All'" : "Must be a valid number";
+    }
+
+    if (!trade.entryPrice.trim()) {
+        errors.entryPrice = "Entry price is required";
+    } else if (!/^\d+(\.\d+)?$/.test(trade.entryPrice.trim().replace(/[£$€,]/g, ""))) {
+        errors.entryPrice = "Must be a valid number";
+    }
+
+    if (!trade.limit.trim()) {
+        errors.limit = "Limit is required";
+    } else if (!/^\d+(\.\d+)?$/.test(trade.entryPrice.trim().replace(/[£$€,]/g, ""))) {
+        errors.limit = "Must be a valid number";
     }
 
     if (!trade.dateOfTrade.trim()) {
@@ -223,23 +242,26 @@ export function SuitabilityWorkspace() {
         clientId: null,
         clientName: "",
         investmentManager: "",
-        platform: "AJ Bell",
+        platform: "Spreadex",
         knowledgeExperience: "Medium",
         capacityOfLoss: "",
         accountNumber: "",
         salutation: "",
         objective: "Balance",
-        risk: "Medium",
+        risk: "High",
         trades: [
             {
                 assetName: "",
-                accountType: "ISA",
-                assetType: "Equity",
-                assetRisk: "Medium",
-                side: "Buy",
+                accountType: "CFD",
+                assetType: "CFD",
+                assetRisk: "High",
+                side: "Buy (Long Open)",
                 quantity: "",
+                entryPrice: "",
+                limit: "",
                 timeOfTrade: "",
                 dateOfTrade: today,
+                adviceChannel: "Phone",
                 reasons: ["", "", ""],
             },
         ],
@@ -334,12 +356,15 @@ export function SuitabilityWorkspace() {
         const newTrade: Trade = {
             assetName: "",
             accountType: form.trades[0].accountType,
-            assetType: "Equity",
-            assetRisk: "Medium",
+            assetType: "CFD",
+            assetRisk: "High",
             side: form.trades[0].side,
             quantity: "",
+            entryPrice: "",
+            limit: "",
             timeOfTrade: form.trades[0].timeOfTrade,
             dateOfTrade: form.trades[0].dateOfTrade,
+            adviceChannel: "Phone",
             reasons: ["", "", ""],
         };
 
@@ -475,23 +500,6 @@ export function SuitabilityWorkspace() {
                         {showErrors && <FieldError error={errors.client.investmentManager} />}
                     </CollapsibleContent>
 
-                    {/*<CollapsibleContent className="space-y-1.5">*/}
-                    {/*    <Label>Knowledge / Experience</Label>*/}
-                    {/*    <Select*/}
-                    {/*        value={form.knowledgeExperience}*/}
-                    {/*        onValueChange={(v: any) => setForm((s) => ({ ...s, knowledgeExperience: v }))}*/}
-                    {/*    >*/}
-                    {/*        <SelectTrigger className="bg-input">*/}
-                    {/*            <SelectValue />*/}
-                    {/*        </SelectTrigger>*/}
-                    {/*        <SelectContent>*/}
-                    {/*            <SelectItem value="Low">Low</SelectItem>*/}
-                    {/*            <SelectItem value="Medium">Medium</SelectItem>*/}
-                    {/*            <SelectItem value="High">High</SelectItem>*/}
-                    {/*        </SelectContent>*/}
-                    {/*    </Select>*/}
-                    {/*</CollapsibleContent>*/}
-
                     <CollapsibleContent className="space-y-1.5">
                         <Label>Platform</Label>
                         <Select disabled
@@ -502,8 +510,8 @@ export function SuitabilityWorkspace() {
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="AJ Bell">AJ Bell</SelectItem>
                                 <SelectItem value="Spreadex">Spreadex</SelectItem>
+                                <SelectItem value="StoneX">StoneX</SelectItem>
                             </SelectContent>
                         </Select>
                     </CollapsibleContent>
@@ -595,57 +603,23 @@ export function SuitabilityWorkspace() {
                                         {showErrors && <FieldError error={errors.trades[abs]?.assetName} />}
                                     </div>
 
-                                    {/*/!* Radio buttons for the account type *!/*/}
-                                    {/*<div className="space-y-1.5">*/}
-                                    {/*    <Label>Account Type</Label>*/}
-                                    {/*    <RadioGroup*/}
-                                    {/*        value={t.accountType}*/}
-                                    {/*        disabled={form.platform !== "AJ Bell"}*/}
-                                    {/*        onValueChange={(v: any) =>*/}
-                                    {/*            updateTrade(abs, (old) => ({*/}
-                                    {/*                ...old,*/}
-                                    {/*                accountType: v,*/}
-                                    {/*            }))*/}
-                                    {/*        }*/}
-                                    {/*    >*/}
-                                    {/*        <div className="flex items-center space-x-1.5">*/}
-                                    {/*            <RadioGroupItem className="bg-input" value="ISA">*/}
-                                    {/*                ISA*/}
-                                    {/*            </RadioGroupItem>*/}
-                                    {/*            <Label>ISA</Label>*/}
-                                    {/*        </div>*/}
-                                    {/*        <div className="flex items-center space-x-1.5">*/}
-                                    {/*            <RadioGroupItem className="bg-input" value="GIA">*/}
-                                    {/*                GIA*/}
-                                    {/*            </RadioGroupItem>*/}
-                                    {/*            <Label>GIA</Label>*/}
-                                    {/*        </div>*/}
-                                    {/*    </RadioGroup>*/}
-                                    {/*</div>*/}
-
                                     <div className="space-y-1.5">
                                         <Label>Asset Type</Label>
                                         <RadioGroup
-                                            value={form.platform === "AJ Bell" ? "Equity" : "CFD/SB"}
-                                            // onValueChange={(v: any) =>
-                                            //     updateTrade(abs, (old) => ({
-                                            //         ...old,
-                                            //         assetType: form.platform === "AJ Bell" ? v = "Equity" : v = "CFD/SB"
-                                            //     }))
-                                            // }
+                                            value={t.accountType === "Spread Bet" ? "Spread Bet" : "CFD"}
                                         >
                                             <div className="flex items-center space-x-1.5">
-                                                <RadioGroupItem className="bg-input" value="Equity">
-                                                    Equity
+                                                <RadioGroupItem className="bg-input" value="CFD">
+                                                    CFD
                                                 </RadioGroupItem>
-                                                <Label>Equity</Label>
+                                                <Label>CFD</Label>
                                             </div>
 
                                             <div className="flex items-center space-x-1.5">
-                                                <RadioGroupItem className="bg-input" value="CFD/SB">
-                                                    CFD/SB
+                                                <RadioGroupItem className="bg-input" value="Spread Bet">
+                                                    Spread Bet
                                                 </RadioGroupItem>
-                                                <Label>CFD/SB</Label>
+                                                <Label>Spread Bet</Label>
                                             </div>
                                         </RadioGroup>
                                     </div>
@@ -694,16 +668,16 @@ export function SuitabilityWorkspace() {
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="Buy">Buy</SelectItem>
-                                                <SelectItem value="Sell">Sell</SelectItem>
-                                                <SelectItem value="Invest">Invest</SelectItem>
-                                                <SelectItem value="Raise">Raise</SelectItem>
+                                                <SelectItem value="Buy (Long Open)">Buy (Long Open)</SelectItem>
+                                                <SelectItem value="Sell (Short Close)">Sell (Short Close)</SelectItem>
+                                                <SelectItem value="Buy (Long Close)">Buy (Long Close)</SelectItem>
+                                                <SelectItem value="Sell (Short Open)">Sell (Short Open)</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
 
                                     <div className="space-y-1.5">
-                                        <Label>{(t.side === "Sell" || t.side === "Buy") ? "Quantity" : "Amount"}</Label>
+                                        <Label>Number of Contracts</Label>
                                         <Input
                                             className={`bg-input ${showErrors && errors.trades[abs]?.quantity ? "border-red-500" : ""}` }
                                             inputMode="numeric"
@@ -721,24 +695,81 @@ export function SuitabilityWorkspace() {
                                                     return;
                                                 }
 
-                                                // auto insert £ for invest when you type
-                                                if (t.side === "Invest" || t.side === "Raise") {
-                                                    v = "£" + v.replace(/£/g, "");
-                                                }
-
                                                 updateTrade(abs, (old) => ({
                                                     ...old,
                                                     quantity: v,
                                                 }))
 
                                             }}
-                                            placeholder={`e.g. 1000`}
+                                            placeholder={`e.g. 5`}
                                         />
                                         {showErrors && <FieldError error={errors.trades[abs]?.quantity} />}
                                     </div>
 
                                     <div className="space-y-1.5">
-                                        <Label>Date of Trade</Label>
+                                        <Label>Entry Price</Label>
+                                        <Input
+                                            className={`bg-input ${showErrors && errors.trades[abs]?.entryPrice ? "border-red-500" : ""}` }
+                                            inputMode="numeric"
+                                            value={t.entryPrice}
+                                            onChange={(e) => {
+
+                                                let v = e.target.value
+
+                                                const deleting = v.length < (t.entryPrice || " ").length;
+                                                if(deleting) {
+                                                    updateTrade(abs, (old) => ({
+                                                        ...old,
+                                                        entryPrice: v,
+                                                    }))
+                                                    return;
+                                                }
+
+                                                updateTrade(abs, (old) => ({
+                                                    ...old,
+                                                    entryPrice: v,
+                                                }))
+
+                                            }}
+                                            placeholder={`e.g. 1000`}
+                                        />
+                                        {showErrors && <FieldError error={errors.trades[abs]?.entryPrice} />}
+                                    </div>
+
+
+                                    <div className="space-y-1.5">
+                                        <Label>Limit to Exit</Label>
+                                        <Input
+                                            className={`bg-input ${showErrors && errors.trades[abs]?.limit ? "border-red-500" : ""}` }
+                                            inputMode="numeric"
+                                            value={t.limit}
+                                            onChange={(e) => {
+
+                                                let v = e.target.value
+
+                                                const deleting = v.length < (t.limit || " ").length;
+                                                if(deleting) {
+                                                    updateTrade(abs, (old) => ({
+                                                        ...old,
+                                                        limit: v,
+                                                    }))
+                                                    return;
+                                                }
+
+                                                updateTrade(abs, (old) => ({
+                                                    ...old,
+                                                    limit: v,
+                                                }))
+
+                                            }}
+                                            placeholder={`e.g. 20`}
+                                        />
+                                        {showErrors && <FieldError error={errors.trades[abs]?.limit} />}
+                                    </div>
+
+
+                                    <div className="space-y-1.5">
+                                        <Label>Date of Initial Advice</Label>
                                         <Input
                                             className={`bg-input ${showErrors && errors.trades[abs]?.dateOfTrade ? "border-red-500" : ""}`}
                                             value={t.dateOfTrade}
@@ -776,7 +807,7 @@ export function SuitabilityWorkspace() {
                                     </div>
 
                                     <div className="space-y-1.5">
-                                        <Label>Time of Trade</Label>
+                                        <Label>Time of Initial Advice</Label>
                                         <Input
                                             className={`bg-input ${showErrors && errors.trades[abs]?.timeOfTrade ? "border-red-500" : ""}`}
                                             value={t.timeOfTrade}
@@ -808,6 +839,28 @@ export function SuitabilityWorkspace() {
                                         />
                                         {showErrors && <FieldError error={errors.trades[abs]?.timeOfTrade} />}
                                     </div>
+
+                                    <div className="space-y-1.5">
+                                        <Label>Advice Channel</Label>
+                                        <Select
+                                            value={t.adviceChannel}
+                                            onValueChange={(v: any) =>
+                                                updateTrade(abs, (old) => ({
+                                                    ...old,
+                                                    adviceChannel: v,
+                                                }))
+                                            }
+                                        >
+                                            <SelectTrigger className="bg-input">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="Phone">Phone</SelectItem>
+                                                <SelectItem value="E-mail">E-mail</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
                                 </div>
 
                                 {/* Reasons + Calculator */}
