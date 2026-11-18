@@ -3,18 +3,23 @@
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import ClientDetailsSheet from "@/components/clients/client-details-sheet";
-import {ChevronRight, RefreshCw, Search, Database as DbIcon, TrashIcon} from "lucide-react";
+import { ChevronRight, RefreshCw, Search, Database as DbIcon, EllipsisVertical } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { clientProvider } from "@/lib/data-provider";
-import {type Client, clientDb} from "@/lib/database";
+import { type Client, clientDb } from "@/lib/database";
 import ClientOptionsMenu from "@/app/clients/client-options-menu";
 import { toast } from "sonner";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import ClientFormDialog from "@/components/clients/client-form-dialog";
+import { clientToForm, formToClientFields } from "@/lib/client-validation";
 
 
 // ---------- UI Components ----------
@@ -34,60 +39,68 @@ function RiskBadge({ risk }: { risk: string }) {
   );
 }
 
-function DeleteClient({
-                        clientId,
-                        onClientCreatedAction,
-                      }: {
+function ClientRowActions({
+                            clientId,
+                            onEdit,
+                            onChanged,
+                          }: {
   clientId: string;
-  onClientCreatedAction: () => void;
+  onEdit: () => void;
+  onChanged: () => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
   const handleDelete = async () => {
     try {
       const success = await clientDb.delete(clientId);
-
       if (!success) throw new Error("Delete failed");
 
-      onClientCreatedAction();
-
-      toast.success("Client deleted")
-
+      onChanged();
+      toast.success("Client deleted");
     } catch (error) {
-      toast.error(`Failed to delete client: ${String(error)}`)
+      toast.error(`Failed to delete client: ${String(error)}`);
     }
   };
 
   return (
-    <>
-      <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0 text-red-600 hover:bg-red-50"
-          onClick={() => setOpen(true)}
-      >
-        <TrashIcon />
-      </Button>
-
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete the client.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-                className="bg-red-600 hover:bg-red-700"
-                onClick={handleDelete}
+      <>
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" aria-label="Client actions">
+              <EllipsisVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onSelect={onEdit}>Edit</DropdownMenuItem>
+            <DropdownMenuItem
+                className="text-red-600 focus:text-red-600"
+                onSelect={() => setConfirmOpen(true)}
             >
               Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently delete the client.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                  className="bg-red-600 hover:bg-red-700"
+                  onClick={handleDelete}
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </>
   );
 }
 
@@ -132,18 +145,14 @@ export default function ClientsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [editing, setEditing] = useState<Client | null>(null);
 
   // Function to fetch clients via the Provider
   const fetchClients = async (query = "") => {
     setLoading(true);
     setError(null);
     try {
-      // Use the provider instead of raw SQL
-      // This handles seeding, mock data fallback, and the DB connection
       const result = await clientProvider.search(query);
-
-      // Map the provider's result to our local state
-      // (The provider returns { items: Client[], total: number })
       setClients(result.items as Client[]);
     } catch (err) {
       console.error("Failed to load clients:", err);
@@ -263,9 +272,11 @@ export default function ClientsPage() {
                               <RiskBadge risk={c.risk} />
                             </td>
                             <td className="px-3 py-3">
-                              <DeleteClient
+                              <ClientRowActions
                                   clientId={c.id}
-                                  onClientCreatedAction={fetchClients}/>
+                                  onEdit={() => setEditing(c)}
+                                  onChanged={() => fetchClients(searchQuery)}
+                              />
                             </td>
                           </tr>
                       ))}
@@ -279,6 +290,22 @@ export default function ClientsPage() {
         <div className="text-xs text-muted-foreground text-right">
           Showing {clients.length} results
         </div>
+
+        {editing && (
+            <ClientFormDialog
+                key={editing.id}
+                title="Edit Client"
+                initialForm={clientToForm(editing)}
+                submitLabel="Save"
+                onClose={() => setEditing(null)}
+                onSubmit={async (form) => {
+                  const ok = await clientDb.update(editing.id, formToClientFields(form));
+                  if (!ok) throw new Error("Update failed");
+                  await fetchClients(searchQuery);
+                  toast.success(`${form.firstName} ${form.lastName} has been updated`);
+                }}
+            />
+        )}
       </div>
   );
 }
