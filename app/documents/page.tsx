@@ -4,8 +4,16 @@ import React, { useEffect, useState } from 'react';
 import { BaseDirectory, readDir, remove, stat, exists, mkdir } from '@tauri-apps/plugin-fs';
 import DocumentList from './document-list';
 import { isTauri } from '@/lib/tauri';
-import { confirmDialog } from '@/lib/file-utils';
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { FileText, FolderOpen } from "lucide-react";
 
 type FileData = {
@@ -16,6 +24,7 @@ type FileData = {
 export default function DocumentsPage() {
     const [files, setFiles] = useState<FileData[]>([]);
     const [loading, setLoading] = useState(true);
+    const [fileToDelete, setFileToDelete] = useState<string | null>(null);
     const folderName = 'Suitability';
 
     const loadFiles = async () => {
@@ -79,13 +88,16 @@ export default function DocumentsPage() {
         loadFiles();
     }, []);
 
-    const handleDelete = async (fileName: string) => {
-        const confirmed = await confirmDialog(
-            'Delete Document',
-            `Are you sure you want to delete ${fileName}?`
-        );
+    // Opens the confirmation dialog
+    const handleDelete = (fileName: string) => {
+        setFileToDelete(fileName);
+    };
 
-        if (!confirmed) return;
+    // Runs when the user confirms in the dialog
+    const confirmDelete = async () => {
+        if (!fileToDelete) return;
+        const fileName = fileToDelete;
+        setFileToDelete(null);
 
         try {
             // Delete using relative path
@@ -135,6 +147,22 @@ export default function DocumentsPage() {
                     <DocumentList files={files} onDelete={handleDelete} />
                 </Card>
             )}
+
+            <Dialog open={fileToDelete !== null} onOpenChange={(open) => { if (!open) setFileToDelete(null); }}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogTitle>Delete Document</DialogTitle>
+                    <DialogDescription className="break-words">
+                        Are you sure you want to delete {fileToDelete}? This can't be undone.
+                    </DialogDescription>
+
+                    <DialogFooter>
+                        <DialogClose asChild>
+                            <Button variant="outline">Cancel</Button>
+                        </DialogClose>
+                        <Button variant="destructive" onClick={confirmDelete}>Delete</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
