@@ -38,6 +38,23 @@ import {
 } from "@/components/ui/collapsible";
 import { ChevronsUpDown} from "lucide-react";
 
+
+const BUY_REASONS: [string, string, string] = [
+    "Oversold 30 minute RSI",
+    "Bullish MACD",
+    "8 day RAF CHANNEL",
+];
+
+const SELL_REASONS: [string, string, string] = [
+    "Overbought 30 minute RSI",
+    "Bearish MACD",
+    "8 day RAF CHANNEL",
+];
+
+const getDefaultReasons = (side: Trade["side"]): [string, string, string] =>
+    side.startsWith("Buy") ? [...BUY_REASONS] : [...SELL_REASONS];
+
+
 /* -------------------- Types -------------------- */
 
 type Trade = {
@@ -276,7 +293,7 @@ export function SuitabilityWorkspace() {
                 timeOfTrade: "",
                 dateOfTrade: today,
                 adviceChannel: "Phone",
-                reasons: ["", "", ""],
+                reasons: getDefaultReasons("Buy (Long Open)"),
             },
         ],
     });
@@ -381,7 +398,7 @@ export function SuitabilityWorkspace() {
             timeOfTrade: form.trades[0].timeOfTrade,
             dateOfTrade: form.trades[0].dateOfTrade,
             adviceChannel: "Phone",
-            reasons: ["", "", ""],
+            reasons: getDefaultReasons(form.trades[0].side),
         };
 
         setForm((prev) => {
@@ -676,10 +693,20 @@ export function SuitabilityWorkspace() {
                                         <Select
                                             value={t.side}
                                             onValueChange={(v: any) =>
-                                                updateTrade(abs, (old) => ({
-                                                    ...old,
-                                                    side: v,
-                                                }))
+                                                updateTrade(abs, (old) => {
+                                                    const newSide = v as Trade["side"];
+                                                    const oldDefaults = getDefaultReasons(old.side);
+                                                    const newDefaults = getDefaultReasons(newSide);
+
+                                                    const reasons = [...old.reasons] as [string, string, string];
+                                                    for (let idx = 0; idx < 3; idx++) {
+                                                        if (reasons[idx].trim() === "" || reasons[idx] === oldDefaults[idx]) {
+                                                            reasons[idx] = newDefaults[idx];
+                                                        }
+                                                    }
+
+                                                    return { ...old, side: newSide, reasons };
+                                                })
                                             }
                                         >
                                             <SelectTrigger className="bg-input">
