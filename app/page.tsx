@@ -7,7 +7,7 @@ import { BarChart, FileText, BookUser, Settings } from "lucide-react";
 
 export default function Home() {
   const { isDesktop, isLoading } = useTauri();
-  const appVersion = useAppVersion();
+  //const appVersion = useAppVersion();
 
   return (
     <div className="space-y-8">
@@ -20,8 +20,8 @@ export default function Home() {
           Wealth Management Platform
           {!isLoading && (
             <span className="ml-2 text-xs">
-              🍎 MacOS Version
-              {appVersion && ` v${appVersion}`}
+              🍎 MacOS Version 0.1.3
+              {/*{appVersion && ` v${appVersion}`}*/}
             </span>
           )}
         </p>
@@ -99,9 +99,10 @@ export default function Home() {
         <Card className="p-6 bg-primary/5 border-primary/20">
           <h3 className="font-semibold mb-2">Latest Updates</h3>
           <ul className="text-sm text-muted-foreground space-y-1">
-            <li>✓ Mac support</li>
             <li>✓ Tailored for CFD and Spread Bet trades</li>
             <li>✓ Add, edit and delete clients directly in the app</li>
+            <li>✓ Default reasons added</li>
+            <li>✓ Input value for Stop Loss added</li>
           </ul>
         </Card>
       )}
