@@ -52,7 +52,7 @@ type Trade = {
     stopLoss: boolean;
     timeOfTrade: string;
     dateOfTrade: string;
-    adviceChannel: "Phone" | "E-mail";
+    adviceChannel: "Phone" | "E-mail" | "SMS";
     reasons: [string, string, string];
 };
 
@@ -875,6 +875,7 @@ export function SuitabilityWorkspace() {
                                             <SelectContent>
                                                 <SelectItem value="Phone">Phone</SelectItem>
                                                 <SelectItem value="E-mail">E-mail</SelectItem>
+                                                <SelectItem value="SMS">SMS</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
