@@ -154,7 +154,6 @@ function confirmReplace(fileName: string): Promise<boolean> {
 
 // The actual PDF Document component
 function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
-    const tradeTime = form.trades.length > 0 ? form.trades[0].timeOfTrade : "—";
     const tradeDate = form.trades.length > 0 ? form.trades[0].dateOfTrade : "—";
     const dateNow = new Date().toLocaleDateString("en-GB");
     const timeNow = new Date().toLocaleTimeString("en-GB", {hour: "2-digit", minute: "2-digit"});
@@ -180,15 +179,6 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 <Text style={styles.section}>
                     Dear {form.salutation},
                 </Text>
-
-                {/*<Text style={[styles.section, {fontWeight:'bold'}, {marginBottom: 3}, {fontSize: 14}]}>*/}
-                {/*    Recommendation -*/}
-                {/*    {form.trades.map((t, i) => (*/}
-                {/*        <Text key={i}>*/}
-                {/*            {t.side} {t.quantity} {t.assetName} @ {t.entryPrice}*/}
-                {/*        </Text>*/}
-                {/*    ))}*/}
-                {/*</Text>*/}
 
                 <View style={{ marginTop: 8 }}>
                     <Text
@@ -385,7 +375,7 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 </Text>
 
                 <Text style={styles.section}>
-                    Date of initial advice: {tradeDate}       Time: {tradeTime}  ({form.trades[0].adviceChannel})
+                    Date of initial advice: {tradeDate}       Time: {form.trades.map(trade => trade.timeOfTrade).join(", ")}  ({form.trades[0].adviceChannel})
                 </Text>
 
                 <Text style={styles.section}>
