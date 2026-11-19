@@ -209,7 +209,7 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                             )}
                             {t.stopLoss && (
                                 <Text>
-                                    {" "} - {t.stopLossValue} point stop loss
+                                    {" "} - {t.stopLossValue} stop loss
                                 </Text>
                             )}
                         </Text>
@@ -286,7 +286,7 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                     {form.trades.map((t, i) => (
                         <View key={i}>
                             <Text style={styles.section}><Text style={{ fontWeight: "bold"}}>{t.assetName}</Text> is
-                                    classified as a high-risk investment with <Text style={{fontWeight: "bold"}}> no fixed investment
+                                    classified as a high-risk investment with <Text style={{fontWeight: "bold"}}>no fixed investment
                                     holding firm.</Text> Therefore, with consideration to your overall risk profile and investment
                                     objectives, we believe it is suitable for the following reasons: </Text>
                             {t.reasons.filter(Boolean).length ? (
