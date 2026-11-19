@@ -50,6 +50,7 @@ type Trade = {
     entryPrice: string;
     limit: string;
     stopLoss: boolean;
+    stopLossValue: string;
     timeOfTrade: string;
     dateOfTrade: string;
     adviceChannel: "Phone" | "E-mail" | "SMS";
@@ -87,6 +88,7 @@ type TradeErrors = {
     quantity: FieldError;
     entryPrice: FieldError;
     limit: FieldError;
+    stopLossValue: FieldError
     dateOfTrade: FieldError;
     timeOfTrade: FieldError;
     reasons: FieldError;
@@ -110,6 +112,7 @@ const emptyTradeErrors: TradeErrors = {
     quantity: null,
     entryPrice: null,
     limit: null,
+    stopLossValue: null,
     dateOfTrade: null,
     timeOfTrade: null,
     reasons: null,
@@ -169,6 +172,14 @@ function validateTrade(trade: Trade): TradeErrors {
         errors.limit = "Limit is required";
     } else if (!/^\d+(\.\d+)?$/.test(trade.entryPrice.trim().replace(/[£$€,]/g, ""))) {
         errors.limit = "Must be a valid number";
+    }
+
+    if (trade.stopLoss) {
+        if (!trade.stopLossValue.trim()) {
+            errors.stopLossValue = "Stop Loss is required";
+        } else if (!/^\d+(\.\d+)?$/.test(trade.entryPrice.trim().replace(/[£$€,]/g, ""))) {
+            errors.stopLossValue = "Must be a valid number";
+        }
     }
 
     if (!trade.dateOfTrade.trim()) {
@@ -261,6 +272,7 @@ export function SuitabilityWorkspace() {
                 entryPrice: "",
                 limit: "",
                 stopLoss: false,
+                stopLossValue:"",
                 timeOfTrade: "",
                 dateOfTrade: today,
                 adviceChannel: "Phone",
@@ -365,6 +377,7 @@ export function SuitabilityWorkspace() {
             entryPrice: "",
             limit: "",
             stopLoss: false,
+            stopLossValue: "",
             timeOfTrade: form.trades[0].timeOfTrade,
             dateOfTrade: form.trades[0].dateOfTrade,
             adviceChannel: "Phone",
@@ -405,6 +418,7 @@ export function SuitabilityWorkspace() {
     /* ------------- validation helper ------------- */
     const validateBeforeSave = (): boolean => {
         const newErrors = validateForm(form);
+        console.log("validation errors", JSON.stringify(newErrors, null, 2));
         setErrors(newErrors);
         setShowErrors(true);
 
@@ -569,6 +583,7 @@ export function SuitabilityWorkspace() {
                 <div className="space-y-4">
                     {pagedTrades.map((t, i) => {
                         const abs = startIdx + i;
+                        const stopLossError = t.stopLoss ? errors.trades[abs]?.stopLossValue : null;
                         return (
                             <div
                                 key={abs}
@@ -784,6 +799,37 @@ export function SuitabilityWorkspace() {
                                             }
                                             className="h-4 w-4"
                                         />
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <Label>Stop Loss</Label>
+                                        <Input
+                                            className={`bg-input ${showErrors && stopLossError ? "border-red-500" : ""}` }
+                                            inputMode="numeric"
+                                            disabled={!t.stopLoss}
+                                            value={t.stopLossValue}
+                                            onChange={(e) => {
+
+                                                let v = e.target.value
+
+                                                const deleting = v.length < (t.stopLossValue || " ").length;
+                                                if(deleting) {
+                                                    updateTrade(abs, (old) => ({
+                                                        ...old,
+                                                        stopLossValue: v,
+                                                    }))
+                                                    return;
+                                                }
+
+                                                updateTrade(abs, (old) => ({
+                                                    ...old,
+                                                    stopLossValue: v,
+                                                }))
+
+                                            }}
+                                            placeholder={`e.g. 1000`}
+                                        />
+                                        {showErrors && <FieldError error={stopLossError} />}
                                     </div>
 
                                     <div className="space-y-1.5">

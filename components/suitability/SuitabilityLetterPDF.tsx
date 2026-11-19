@@ -159,6 +159,7 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
     const dateNow = new Date().toLocaleDateString("en-GB");
     const timeNow = new Date().toLocaleTimeString("en-GB", {hour: "2-digit", minute: "2-digit"});
     const limitValue = Number(form.trades.map(trade => trade.limit))
+    //const stopLossNumber = Number(form.trades.map(trade => trade.stopLossValue))
 
     return (
         <Document>
@@ -190,29 +191,65 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 {/*</Text>*/}
 
                 <View style={{ marginTop: 8 }}>
+                    <Text
+                        style={[
+                            styles.list,
+                            { fontFamily: "Helvetica-Bold" },
+                            { fontSize: "14px" },
+                        ]}
+                    >
+                        Recommendation –
+                    </Text>
+
                     {form.trades.map((t, i) => (
                         <Text
                             key={i}
                             style={[
                                 styles.list,
-                                { marginTop: i === 0 ? 0 : 4 },
+                                { marginTop: 4 },
                                 { fontFamily: "Helvetica-Bold" },
-                                { fontSize: "14px" }
+                                { fontSize: "14px" },
                             ]}
                         >
-                            {i === 0 && <Text>Recommendation – </Text>}
-                            {t.side} {t.quantity}{" "}
-                            <Text>{t.assetName}</Text>
-                            {" "}@ {t.entryPrice}
-
+                            {t.side} {t.quantity} <Text>{t.assetName}</Text> @ {t.entryPrice}
                             {limitValue !== 0 && (
                                 <Text>
-                                    {" "}({t.limit} limit to exit Good-Till-Cancelled Order (GTC)
+                                    {" "}({t.limit} limit to exit Good-Till-Cancelled Order (GTC))
+                                </Text>
+                            )}
+                            {t.stopLoss && (
+                                <Text>
+                                    {" "} - {t.stopLossValue} point stop loss
                                 </Text>
                             )}
                         </Text>
                     ))}
                 </View>
+
+                {/*<View style={{ marginTop: 8 }}>*/}
+                {/*    {form.trades.map((t, i) => (*/}
+                {/*        <Text*/}
+                {/*            key={i}*/}
+                {/*            style={[*/}
+                {/*                styles.list,*/}
+                {/*                { marginTop: i === 0 ? 0 : 4 },*/}
+                {/*                { fontFamily: "Helvetica-Bold" },*/}
+                {/*                { fontSize: "14px" }*/}
+                {/*            ]}*/}
+                {/*        >*/}
+                {/*            {i === 0 && <Text>Recommendation – </Text>}*/}
+                {/*            {t.side} {t.quantity}{" "}*/}
+                {/*            <Text>{t.assetName}</Text>*/}
+                {/*            {" "}@ {t.entryPrice}*/}
+
+                {/*            {limitValue !== 0 && (*/}
+                {/*                <Text>*/}
+                {/*                    {" "}({t.limit} limit to exit Good-Till-Cancelled Order (GTC)*/}
+                {/*                </Text>*/}
+                {/*            )}*/}
+                {/*        </Text>*/}
+                {/*    ))}*/}
+                {/*</View>*/}
 
                 {form.trades.some(trade => !trade.stopLoss) && (
                     <View
