@@ -207,7 +207,7 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
 
                             {limitValue !== 0 && (
                                 <Text>
-                                    {" "}({t.limit} limit to exit Good-Till-Cancelled Order (GTC))
+                                    {" "}({t.limit} limit to exit Good-Till-Cancelled Order (GTC)
                                 </Text>
                             )}
                         </Text>
@@ -258,11 +258,10 @@ function SuitabilityLetterDoc({form}: { form: SuitabilityFormState }) {
                 <View>
                     {form.trades.map((t, i) => (
                         <View key={i}>
-                            <Text style={styles.section}><Text style={{ fontWeight: "bold"}}>{t.assetName}</Text> is classified as a high-risk investment. </Text>
-                            <Text style={styles.section}>
-                                Therefore, with consideration to your overall risk profile and
-                                investment objectives, we believe it is suitable for the following reasons:
-                            </Text>
+                            <Text style={styles.section}><Text style={{ fontWeight: "bold"}}>{t.assetName}</Text> is
+                                    classified as a high-risk investment with <Text style={{fontWeight: "bold"}}> no fixed investment
+                                    holding firm.</Text> Therefore, with consideration to your overall risk profile and investment
+                                    objectives, we believe it is suitable for the following reasons: </Text>
                             {t.reasons.filter(Boolean).length ? (
                                 t.reasons.map((r, idx) =>
                                     <Text key={idx} style={styles.list}>- {r}</Text>)
